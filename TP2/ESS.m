@@ -8,11 +8,10 @@ function [sequence] = ESS(x,nd,nf,N) ;
     f_abs = 0:1/N:1-1/N;
     figure(2)
     hold on
-    plot(f_abs,log_gamma_x_c)
-    plot(fth,Gth)
-    plot(fth,Gbiais)
+    plot(f_abs,log_gamma_x_c,fth,Gth,'k',fth,Gbiais,'r')
     axis([0 0.5 -50 10])
     legend('Estimation de la DSP','DSPMV','Convolution de la DSP et de la fenetre de Barlett')
-    
+    title('Densités spectrales de puissance calculées')
+
 
 end
