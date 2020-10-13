@@ -1,5 +1,12 @@
 function  ESS(x,nd,nf,NFFT) ;
-
+    %Input : 
+    % x - séquence brut 
+    %nd - premier indice de la séquence à analyser
+    %nf - dernier indice de la séquence à analyser
+    %NFFT - nombre de points de TFD-N points
+    %Output : 
+    %None
+    
     % ---Initialisation des variables ---
     x_seq = x(nd : nf); %Sequence à analyser
     N = nf - nd +1; %Longueur de la sequence
