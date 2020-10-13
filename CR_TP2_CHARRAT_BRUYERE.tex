@@ -1,0 +1,495 @@
+\documentclass{article}
+
+% New commands declaration
+
+\usepackage[frenchb]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{natbib,bibentry}
+\usepackage{color}
+\usepackage{yfonts}
+\usepackage{graphicx}
+\usepackage{epsfig,subfigure}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{calc}
+
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+
+\DeclareGraphicsExtensions{.eps, .jpg, .png}
+
+\parindent = 0mm
+
+\bibliographystyle{plain}
+
+\hoffset = -20mm
+\voffset = -25mm
+\textwidth = 160mm
+\textheight = 240mm
+
+% \definecolor{lightgray}{gray}{0.2}
+
+
+\newcommand{\expect}{{\rm I \mkern-2.5mu \nonscript\mkern-.5mu E}}
+\newcommand{\equaldef}{\stackrel{d}{=}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+
+\newcommand{\dnu}{16}
+\newcommand{\solskip}{10mm}
+
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+\renewcommand{\textfraction}{0}
+
+\newcommand{\debutrep}[1]{\color{blue}\begin{center} \hrulefill \textbf{ #1 } \hrulefill \end{center} }
+\newcommand{\finrep}{\vspace*{5mm}\hfill $\square$\color{black}\vspace*{5mm}}
+
+
+\begin{document}
+
+\baselineskip = 4mm
+\title{Traitement des Signaux Aléatoires \\
+Estimation Spectrale}
+\author{\textbf{4 ETI -- CPE Lyon }\\[3mm]
+{Travaux Pratiques TSA}}
+\date{2020-2021}
+
+\maketitle
+
+\noindent\fbox{
+\parbox{\linewidth-2\fboxrule-2\fboxsep}
+{ 
+\vspace*{2mm}
+{\large\bf Noms, Prénoms: }\\[3mm]
+{\large\bf Groupe: }\\[3mm]
+{\large\bf Date:}\\[2mm]}}
+\vspace*{5mm}
+
+
+\textbf{\Large Objectifs du TP}\\[4mm]
+
+\begin{list}{-}{\setlength{\leftmargin}{3mm} \setlength{\labelwidth}{20mm} \setlength{\labelsep}{2mm} \setlength{\itemsep}{1mm} }
+\item Comprendre la notion de densité spectrale d'énergie ou de puissance moyenne
+\item Manipuler différents estimateurs empiriques (à partir d'une série temporelle de taille finie) de DSE/DSPM
+\item Etudier l'effet du compromis biais-variance d'un estimateur
+\end{list}
+
+
+\vspace*{5mm}
+
+\section{Préparation}
+
+\begin{itemize}
+\item[{\bf Question 1}] Comment peut-on calculer simplement la densité spectrale d’énergie (DSE) d’un signal certain d’énergie finie ?
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 2}] Comment est définie la densité spectrale de puissance moyenne (DSPM) d’un processus aléatoire ?
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 3}] Quelles sont les grandeurs qui permettent de chiffrer la qualité d’une estimation dans le cas général ? et la qualité de l’estimation spectrale en particulier.
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 4}] Exprimer la densité spectrale de puissance moyenne (DSPM) GB ( f ) d’un bruit blanc stationnaire centré.
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 5}] Exprimer GX ( f ) , où X(t) est la sortie d’un filtre excité par un bruit blanc centré, en fonction de la DSPM du bruit blanc et des caractéristiques du filtre.
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 6}] En une phrase (sans formule), décrire le procédé de calcul de la DSPM estimée G1 ( f )
+d’une séquence aléatoire via l’estimateur simple.
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 7}] Rappeler le mode de graduation d’une TFD-N points en fréquences réduites.
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 8}] Décrire (avec une phrase) le procédé de calcul de la DSPM estimée G2 ( f ) d’une
+séquence aléatoire via l’estimateur moyenné.
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 9}] Que signifie le terme «compromis biais-variance» dans le cas de l’estimateur moyenné ?
+
+\debutrep{réponse}
+
+\finrep
+
+\item[{\bf Question 10}] Quelles modifications sont apportées au procédé de calcul de l’estimateur de Welch par rapport à l’estimateur moyenné ?
+
+\debutrep{réponse}
+
+\finrep
+
+\end{itemize}
+
+\clearpage
+\setcounter{section}{2}
+\section{Estimation de la DSPM d'un bruit blanc gaussien filtré}
+\subsection{Génération du bruit à analyser}
+
+A quoi sert l'entier permettant d'initialiser le générateur ?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\subsection{Estimateur spectral simple}
+\subsubsection{Script de la fonction {\tt Matlab} développée}
+
+\debutrep{code ci-dessous}
+\begin{verbatim}
+
+\end{verbatim}
+\finrep
+
+\subsubsection{Expérimentation}
+
+\begin{enumerate}
+\renewcommand{\theenumi}{\Alph{enumi}}
+\item Etude du biais et de la variance en fonction du nombre $N$ d'échantillons de bruit
+
+\debutrep{figures ci-dessous}
+
+\begin{figure}[h]
+
+\caption{$N$ faible -- indice de début de la séquence à 1}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{$N$ élevé -- indice de début de la séquence à 1}
+\end{figure}
+\finrep
+
+Commentaires.
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Etude du biais et de la variance en fonction de la réalisation considérée, à $N$ fixé
+
+\debutrep{figures ci-dessous}
+
+\begin{figure}[h]
+
+\caption{$N \sim 1000$ -- indice de début de la séquence à 1}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{$N \sim 1000$  -- indice de début de la séquence fixé à une autre position ($\gg 1000$) dans la séquence}
+\end{figure}
+\finrep
+
+Commentaires.
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Etude du biais et de la variance en fonction du nombre $NFFT$ de FFT
+
+\debutrep{figures ci-dessous}
+
+\begin{figure}[h]
+
+\caption{$N$ constant -- indice de début de la séquence à 1 -- $NFFT \sim N$}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{$N$ constant -- indice de début de la séquence à 1 -- $NFFT \gg N$}
+\end{figure}
+
+\finrep
+
+Commentaires.
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Conclusion
+Quel est le principal défaut de l'estimateur simple ?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\end{enumerate}
+
+\clearpage
+\subsection{Estimateur spectral moyenné}
+
+\textbf{On fixera $\mathbf{N=4096}$ dans tout ce qui suit.}
+
+\subsubsection{Script de la fonction {\tt Matlab} développé}
+
+\debutrep{code ci-dessous}
+\begin{verbatim}
+
+\end{verbatim}
+\finrep
+
+
+\subsubsection{Expérimentation}
+
+En précisant bien la valeur des paramètres utilisés pour les essais, affichez les figures correspondantes aux conditions indiquées.
+\debutrep{figure ci-dessous}
+
+\begin{figure}[h]
+
+\caption{$N=4096$ -- tranches courtes $M = ??? $, $NFFT = ???$}
+\end{figure}
+\finrep
+
+Commentaires
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\debutrep{figure ci-dessous}
+\begin{figure}[h]
+
+\caption{$N=4096$ -- tranches longues $M = ???$, $NFFT = ???$}
+\end{figure}
+
+\finrep
+
+Commentaires
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\debutrep{figure ci-dessous}
+\begin{figure}[h]
+
+\caption{$N=4096$ -- \og Meilleur \fg compromis biais variance atteint pour $M = ???$, $NFFT = ???$}
+\end{figure}
+
+\finrep
+
+Quelle information permettrait d'obtenir le meilleur compromis biais-variance? 
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\clearpage
+\section{Estimateur de Welch}
+
+\subsection{Etude préalable des fenêtres}
+
+Quelles différences de comportement fréquentiel peut-on observer pour les 6 fenêtres proposées (lobe principal, lobes latéraux\ldots).
+
+\subsubsection{Script de la fonction {\tt Matlab} développée}
+
+\debutrep{code ci-dessous}
+\begin{verbatim}
+
+\end{verbatim}
+\finrep
+
+\subsubsection{Expérimentation}
+
+\begin{enumerate}
+\renewcommand{\theenumi}{\Alph{enumi}}
+
+\item Etude du biais et de la variance en fonction du taux de recouvrement entre tranches
+
+Pour $N$, $M$ et $NFFT$ fixés et pour une  fenêtre choisie,  tracez les figures correspondantes aux conditions indiquées ci-dessous.
+
+\debutrep{figure ci-dessous}
+\begin{figure}[h]
+
+\caption{$N = 4096$ -- $M = ???$, $NFFT = ???$. Choix de fenêtre = ??? -- Recouvrement de $0\%$}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{$N = 4096$ -- $M = ???$, $NFFT = ???$. Choix de fenêtre = ??? -- Recouvrement de $50\%$}
+\end{figure}
+
+\finrep
+
+Que permet le recouvrement entre tranches ?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Etude du biais et de la variance en fonction de la fenêtre utilisée
+
+Pour $N$, $M$ et $NFFT$ fixés et pour différents choix de fenêtre,  tracez les figures correspondantes aux conditions indiquées ci-dessous.
+
+\debutrep{figure ci-dessous}
+\begin{figure}[h]
+
+\caption{$N = 4096$ -- $M = ???$, $NFFT = ???$. Fenêtre Rectangle -- Recouvrement de $50\%$}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{$N = 4096$ -- $M = ???$, $NFFT = ???$. Fenêtre ??? -- Recouvrement de $50\%$}
+\end{figure}
+
+\finrep
+
+Que permet l'utilisation d'une fenêtre autre que rectangulaire ? Expliquer.
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\end{enumerate}
+
+Pour quelles valeurs des paramètres d'analyse obtenez vous le \og meilleur \fg résultat (celui qui vous parait le plus satisfaisant)?
+
+\debutrep{réponse ci-dessous}
+
+Longueur de la séquence analysée $N = ???$ \\
+Longueur des tranches $M = ???$ \\
+Type de fenêtre ??? \\
+Taux de recouvrement = ??? \\
+Nombre de points de transformée de Fourier $NFFT = ???$
+
+\finrep
+
+\section{Utilisation des estimateurs précédents pour analyser un signal inconnu}
+
+\subsection{Modification des programmes}
+
+Script d'une des fonctions modifiée
+
+\debutrep{code ci-dessous}
+\begin{verbatim}
+
+\end{verbatim}
+\finrep
+
+\subsection{Expérimentation}
+
+Afficher les spectres estimés obtenus avec chacune des 3 méthodes étudiées.
+
+\debutrep{figure ci-dessous}
+\begin{figure}[h]
+
+\caption{Estimateur spectral simple. \textit{Indiquez tous les paramètres choisis}.}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{Estimateur spectral moyenné. \textit{Indiquez tous les paramètres choisis}.}
+\end{figure}
+
+\begin{figure}[h]
+
+\caption{Estimateur spectral de Welch. \textit{Indiquez tous les paramètres choisis}.}
+\end{figure}
+
+\finrep
+
+Décrivez précisément la démarche expérimentale suivie. Avec quelle méthode êtes vous capable avec certitude de décrire le contenu fréquentiel de ce signal ?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\subsubsection{Interprétations}
+
+\begin{enumerate}
+\renewcommand{\theenumi}{\Alph{enumi}}
+
+\item Que inconvénient majeur l'utilisation d'une fenêtre (d'apodisation en temps) engendre-t-elle?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Décrire (sans dessin) la forme de la DSPM obtenue.
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Quelles informations la forme de cette DSPM apporte-t-elle sur le contenu (la nature) du signal?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\item Quelles mesures concernant  les caractéristiques du signal peut-on effectuer sur la DSPM?
+
+\debutrep{réponse ci-dessous}
+
+\finrep
+
+\end{enumerate}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
