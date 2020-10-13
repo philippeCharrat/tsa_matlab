@@ -3,7 +3,7 @@ function ESW(x,N,fenetre_char,M,NOVERLAP,NFFT)
 % ---Initialisation des variables ---
     x_seq = x(1:N);
     eval(['WIN=',fenetre_char,'(M)']);
-    f_abs = 0:1/N;
+    f_abs = 0:1/N:1-1/N;
     
 % ---Création de l'estimateur 3---
     [gamma_x_c,fabs] = pwelch(x_seq,WIN,NOVERLAP,NFFT,1,'twosided');

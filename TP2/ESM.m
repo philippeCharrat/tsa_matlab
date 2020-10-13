@@ -22,7 +22,6 @@ function ESM(x,N,M,nfft)
     
     % Partie affichage ---
     figure(2)
-    hold on
     plot(fabs,log_gamma_xd_c,'b',fth,Gth,'k',fth,Gbiais,'r')
     axis([0 0.5 -50 10])
     legend('Estimateur 2','DSPMV','Convolution de la DSP et de la fenetre de Barlett')
