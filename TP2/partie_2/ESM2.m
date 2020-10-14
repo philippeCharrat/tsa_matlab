@@ -1,4 +1,4 @@
-function ESM(x,N,M,nfft)
+function [gamma_xd_c,fabs] = ESM2(x,N,M,nfft)
     % Inputs :
     % x - séquence brut 
     % N - nombre d'échantillons maximum
@@ -15,11 +15,5 @@ function ESM(x,N,M,nfft)
     
     % Création de l'estimateur 2 ---
     [gamma_xd_c,fabs] = pwelch(x_seq,fenetre,noverlap,nfft,1,'twosided');
-      
-    % Partie affichage ---
-    figure(2);
-    semilogy(fabs,gamma_xd_c,'b');
-    axis([0 0.5 -inf inf])
-    legend('Estimateur 2')
-    title('Densités spectrales de puissance calculées')
+    
 end
