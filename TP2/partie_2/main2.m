@@ -1,4 +1,7 @@
-clc;clear variables;close all;
+
+clc;
+clear variables;
+close all;
 
 %s = genbrfil;
 load('../sig.mat');
@@ -24,4 +27,4 @@ subplot(3,1,3)
 semilogy(fabs3,gamma_x_e3,'b');
 axis([0 0.5 -inf inf])
 legend('Estimateur 3')
-title("Représentation de l'estimateur simple en fonction du signal")
+title("Représentation de l'estimateur Welch en fonction du signal")

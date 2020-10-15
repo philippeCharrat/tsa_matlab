@@ -23,7 +23,7 @@ function  ESS(x,nd,nf,NFFT) ;
     % ---Partie affichage ---
     figure(2)
     plot(f_abs,log_gamma_x_c,fth,Gth,'k',fth,Gbiais,'r')
-    axis([0 0.5 -50 10])
+    axis([0 0.5 -60 10])
     legend('Estimation de la DSP','DSPMV','Convolution de la DSP et de la fenetre de Barlett')
     title('Densités spectrales de puissance calculées')
 
