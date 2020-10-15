@@ -1,8 +1,8 @@
 function  ESS(x,nd,nf,NFFT) ;
     %Input : 
-    % x - s√©quence brut 
-    %nd - premier indice de la s√©quence √† analyser
-    %nf - dernier indice de la s√©quence √† analyser
+    % x - sÈquence brut 
+    %nd - premier indice de la sÈquence √† analyser
+    %nf - dernier indice de la sÈquence √† analyser
     %NFFT - nombre de points de TFD-N points
     %Output : 
     %None
@@ -11,9 +11,9 @@ function  ESS(x,nd,nf,NFFT) ;
     x_seq = x(nd : nf); %Sequence √† analyser
     N = nf - nd +1; %Longueur de la sequence
     
-    % ---Cr√©ation de l'estimateur 1 ---
-    X = fft(x_seq,NFFT); %Transofrm√©e N points de la s√©quence  
-    gamma_x_c = ((abs(X)).^2)/NFFT; %Estimation simple
+    % ---CrÈation de l'estimateur 1 ---
+    X = fft(x_seq,NFFT); %TransofrmÈe N points de la sÈquence  
+    gamma_x_c = ((abs(X)).^2)/N; %Estimation simple
     log_gamma_x_c = 10*log10(gamma_x_c); %Passage au log (forme quadratique donc log * 10)
     
     % ---DSP moyenne vraie et (gamma(f) * Wbm(f))(f)
@@ -25,7 +25,5 @@ function  ESS(x,nd,nf,NFFT) ;
     plot(f_abs,log_gamma_x_c,fth,Gth,'k',fth,Gbiais,'r')
     axis([0 0.5 -60 10])
     legend('Estimation de la DSP','DSPMV','Convolution de la DSP et de la fenetre de Barlett')
-    title('Densit√©s spectrales de puissance calcul√©es')
-
-
+    title(["Etude de l'estimateur simple ‡ une sÈquence de ",int2str(N)," Èchantillons"])
 end

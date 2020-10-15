@@ -1,4 +1,10 @@
 \documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{CR_TP2}
+\author{philippe.tankmouse }
+\date{October 2020}
+
 
 % New commands declaration
 
@@ -47,6 +53,7 @@
 \newcommand{\debutrep}[1]{\color{blue}\begin{center} \hrulefill \textbf{ #1 } \hrulefill \end{center} }
 \newcommand{\finrep}{\vspace*{5mm}\hfill $\square$\color{black}\vspace*{5mm}}
 
+\documentclass{article}
 
 \begin{document}
 
@@ -152,95 +159,105 @@ séquence aléatoire via l’estimateur moyenné.
 \section{Estimation de la DSPM d'un bruit blanc gaussien filtré}
 \subsection{Génération du bruit à analyser}
 
-A quoi sert l'entier permettant d'initialiser le générateur ?
+A quoi sert l'entier permettant d'initialiser le générateur ?\\
 
-\debutrep{réponse ci-dessous}
-
-\finrep
+Le problème est qu'il est compliqué d'analyser des processus aléatoire car cela reviendrait à comparer des signaux avec les même caractéristique mais des réalisations différentes. L'option \textit{seed} des fonctions \textit{rnd, rand} sur MATLAB nous permet de fixer la suite de nombre aléatoires dans un ordre précis pour que les n réalisations soit identiques. Ainsi, on étudie un processus pseudo-aléatoire car prédictible.
 
 \subsection{Estimateur spectral simple}
 \subsubsection{Script de la fonction {\tt Matlab} développée}
 
-\debutrep{code ci-dessous}
+Le code de la focntion \textit{ESS}, il tronqué de sa partie affichage et de ses commentaires pour des raisons de lisibilité mais vous pouvez le retrouver complet en annexes : 
 \begin{verbatim}
-
+function  ESS(x,nd,nf,NFFT) ;
+    % ---Initialisation des variables ---
+    x_seq = x(nd : nf); %Sequence Ã  analyser
+    N = nf - nd +1; %Longueur de la sequence
+    
+    % ---Création de l'estimateur 1 ---
+    X = fft(x_seq,NFFT); %Transofrmée N points de la séquence  
+    gamma_x_c = ((abs(X)).^2)/N; %Estimation simple
+    log_gamma_x_c = 10*log10(gamma_x_c); %Passage au log (forme quadratique donc log * 10)
+    
+    % ---DSP moyenne vraie et (gamma(f) * Wbm(f))(f)
+    [Gth,Gbiais,fth]=sptheo(N,'simple');
+    f_abs = 0:1/NFFT:1-1/NFFT;
+    
+    % ---Partie affichage ---
+    figure(2)
+    plot(f_abs,log_gamma_x_c,fth,Gth,'k',fth,Gbiais,'r')
+    axis([0 0.5 -60 10])
+    legend('Estimation de la DSP','DSPMV','Convolution de la DSP et de la fenetre de Barlett')
+    title("Etude de l'estimateur simple")
+end
 \end{verbatim}
-\finrep
 
+\newpage
 \subsubsection{Expérimentation}
 
 \begin{enumerate}
 \renewcommand{\theenumi}{\Alph{enumi}}
-\item Etude du biais et de la variance en fonction du nombre $N$ d'échantillons de bruit
+\item Étude du biais et de la variance en fonction du nombre $N$ d'échantillons de bruit
 
-\debutrep{figures ci-dessous}
+Pour l'étude du biais, nous allons faire varier le paramètre d'entrée N de la fonction \textit{ESS} de 1000 échantillons à 100000 échantillons.
 
 \begin{figure}[h]
-
-\caption{$N$ faible -- indice de début de la séquence à 1}
+\centerline{\includegraphics[width=0.52\textwidth]{images/casESN1000.png}}
+\caption{$N$ faible (1000)-- indice de début de la séquence à 1}
 \end{figure}
 
 \begin{figure}[h]
-
-\caption{$N$ élevé -- indice de début de la séquence à 1}
+\centerline{\includegraphics[width=0.52\textwidth]{images/casESN100000.png}}
+\caption{$N$ élevé (100 000)-- indice de début de la séquence à 1}
 \end{figure}
-\finrep
 
-Commentaires.
+Sur les figures 1 et 2, nous pouvons observer 3 courbes, la bleu correspond à la densité spectrale obtenues à partir d'une séquence empirique à $N$ points. La courbe noire correspond à la densité spectrale théorique non biaisée et la rouge correspond à la densité spectrale convolué par une fenêtre de BARLETT (donc biaisé). 
+Ainsi, nous pouvons constater que si N est faible alors la DS empirique correspond à l'estimateur non-biaisé sur les basses-fréquences mais va être biasié sur les hautes fréquences et une variance qui est "faible" sur toutes la DSP.
+Inversement, avec un N important le biais va être "faible" car la courbe bleu suit la DST mais la variance est très importantes. \\
+Nous pouvons expliquer ce comportement à l'aide du phénomène de convolution par la fenêtre de BARRET car plus on a une fenêtre tend vers l'inifinie (plus physiquement le signale est long dans le temps) et plus le replie temporelle va être faible donc les hautes fréquences de la DST ne vont pas être impactées par les basses fréquences et le biais diminues. Le problème est que la variance est obtenues à l'aide de la relation :\\
+\centerline{$VAR(ES) = \Gamma^2(x) + [1+(sin(2*pi*f*N)/(N*2*pi*f))^2]$}
+ 
+\newline
 
-\debutrep{réponse ci-dessous}
-
-\finrep
-
-\item Etude du biais et de la variance en fonction de la réalisation considérée, à $N$ fixé
-
-\debutrep{figures ci-dessous}
+\item Etude du biais et de la variance en fonction de la réalisation considérée, à $N$ fixé 
+\newline
+Pour cette étude, nous avons fixé taille du N à 1000 échantillons et l'on obtient les figures suivantes : 
 
 \begin{figure}[h]
 
+\centerline{\includegraphics[width=0.55\textwidth]{images/casESN1000.png}}
 \caption{$N \sim 1000$ -- indice de début de la séquence à 1}
 \end{figure}
 
 \begin{figure}[h]
 
+\centerline{\includegraphics[width=0.55\textwidth]{images/casESN1000PD2000.PNG}}
 \caption{$N \sim 1000$  -- indice de début de la séquence fixé à une autre position ($\gg 1000$) dans la séquence}
 \end{figure}
-\finrep
 
-Commentaires.
+Nous pouvons observer que sur les figure 3 et 4 (pour une séquence qui débute à 2000), les courbes obtenues sont semblables. Ce résultat est cohérent car le signal  observé est un bruit blanc Gaussien qui à comme propriété d'être stationnaire donc l'intervalle d'échantillons peut être quelconque car n'influe pas sur l'étude, tant que l'on conserve une même taille $N$. 
+\newline
 
-\debutrep{réponse ci-dessous}
-
-\finrep
-
+\clearpage
 \item Etude du biais et de la variance en fonction du nombre $NFFT$ de FFT
-
-\debutrep{figures ci-dessous}
-
+\newline
+Pour cette étude, nous avons fixé taille du N à 1000 échantillons et l'on obtient les figures suivantes : 
 \begin{figure}[h]
-
+\centerline{\includegraphics[width=0.55\textwidth]{images/casESN1000.png}}
 \caption{$N$ constant -- indice de début de la séquence à 1 -- $NFFT \sim N$}
 \end{figure}
 
 \begin{figure}[h]
-
-\caption{$N$ constant -- indice de début de la séquence à 1 -- $NFFT \gg N$}
+\centerline{\includegraphics[width=0.55\textwidth]{images/casESN1000FFT214.png}}
+\caption{$N$ constant -- indice de début de la séquence à 1 -- $NFFT (2**14) \gg N$}
 \end{figure}
 
-\finrep
-
-Commentaires.
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+Nous pouvons observer que sur les figure 5 et 6 (une FFT sur $2^14$ points), les courbes obtenues sont semblables. Ce résultat est cohérent car pour obtenir les densités spectrales le paramètre $NFFT$ n'influence que le nombre de points pour la Transformé de Fourier à N points. Et va permettre d'augmenter la précisions de la courbe.  Ainsi il ne peut pas influé sur l'étude, tant que l'on prend $NFFT > N$. 
+\newline
 
 \item Conclusion
-Quel est le principal défaut de l'estimateur simple ?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+Quel est le principal défaut de l'estimateur simple ?\\
+\newline
+A l'aide de l'étude réalisé, nous pouvons conclure que l'estimateur simple à comme principale défaut sa variance car N est grand est plus le terme carré pour obtenir la variance va "exploser" et cela devient compliqué d'analyser la courbe. Ainsi cette estimateur n'est pas de bonne qualité.  
 
 \end{enumerate}
 
@@ -493,3 +510,6 @@ Décrivez précisément la démarche expérimentale suivie. Avec quelle méthode
 
 
 
+
+
+\end{document}
