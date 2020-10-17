@@ -1,8 +1,8 @@
 function [gamma_xd_c,fabs] = ESM2(x,N,M,nfft)
     % Inputs :
-    % x - sÃ©quence brut 
-    % N - nombre d'Ã©chantillons maximum
-    % M - nombre d'Ã©chantillons d'une sous fenÃªtre 
+    % x - séquence brut 
+    % N - nombre d'échantillons maximum
+    % M - nombre d'échantillons d'une sous fenÃªtre 
     % nfft - nombre de points fft Ã  N points
     % 
     % Oututs :
@@ -13,7 +13,7 @@ function [gamma_xd_c,fabs] = ESM2(x,N,M,nfft)
     fenetre = rectwin(M); % Fenetre taille M << N
     noverlap = 0; % Chevauchement 
     
-    % CrÃ©ation de l'estimateur 2 ---
+    % Création de l'estimateur 2 ---
     [gamma_xd_c,fabs] = pwelch(x_seq,fenetre,noverlap,nfft,1,'twosided');
     
 end

@@ -403,40 +403,56 @@ Nombre de points de transformée de Fourier $NFFT = ???$
 \subsection{Modification des programmes}
 
 Script d'une des fonctions modifiée
+\newline
+\newline
+Les fonctions ont étés modifiées en retirant la partie création de la partie théorique car le signal étudié n'est plus un bruit blanc mais un signal inconnu et fournie sur CPe-campus.
+\newline
+L'autre modification est que nous avons ajouté des paramètres de retours et retirer la partie affichage interne à chaque fonction. Ainsi, nous avons centralisé l'affichage dans le code main et utilisé la fonction \textit{semilogy} pour obtenir une étude plus ergonomique. 
+Ci-dessous le code de la fonction \textit{ESS.c }, l'estimateur Simple. Tous les codes avec leurs commentaires sont disponibles en Annexes. 
 
-\debutrep{code ci-dessous}
 \begin{verbatim}
+function [gamma_x_c,f_abs] = ESS(x,nd,nf,NFFT) ;
+    % ---Initialisation des variables ---
+    x_seq = x(nd : nf); %Sequence à  analyser
+    N = nf - nd +1; %Longueur de la sequence
+    
+    % ---Création de l'estimateur 1 ---
+    X = fft(x_seq,NFFT); %Transofrmée N points de la séquence  
+    gamma_x_c = ((abs(X)).^2)/N; %Estimation simple
+    f_abs = 0 : 1/NFFT: 1-1/NFFT;
+end
 
 \end{verbatim}
-\finrep
+
 
 \subsection{Expérimentation}
 
 Afficher les spectres estimés obtenus avec chacune des 3 méthodes étudiées.
 
-\debutrep{figure ci-dessous}
-\begin{figure}[h]
 
-\caption{Estimateur spectral simple. \textit{Indiquez tous les paramètres choisis}.}
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.52\textwidth]{images/casESSimpleSignalInconnue.png}}
+\caption{Estimateur spectral simple. \textit{Les paramètres sont un N de 100000 (totalité du signal) et un NFFT de 16384 points}.}
 \end{figure}
 
 \begin{figure}[h]
-
-\caption{Estimateur spectral moyenné. \textit{Indiquez tous les paramètres choisis}.}
+\centerline{\includegraphics[width=0.52\textwidth]{images/casESMSignalInconnue.png}}
+\caption{Estimateur spectral Moyenné. \textit{Les paramètres sont un M de 1000 et une NFFT de 1024 points}.}
 \end{figure}
 
 \begin{figure}[h]
-
-\caption{Estimateur spectral de Welch. \textit{Indiquez tous les paramètres choisis}.}
+\centerline{\includegraphics[width=0.52\textwidth]{images/casESWSignalInconnue.png}}
+\caption{Estimateur spectral de Welch. \textit{Les paramètres sont un M de 2000 et une NFFT de 2048 points et de 50\% d\'Overlap}.}
 \end{figure}
 
 \finrep
+\newpage
+Décrivez précisément la démarche expérimentale suivie. Avec quelle méthode êtes vous capable avec certitude de décrire le contenu fréquentiel de ce signal ?\newline
 
-Décrivez précisément la démarche expérimentale suivie. Avec quelle méthode êtes vous capable avec certitude de décrire le contenu fréquentiel de ce signal ?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+Dans un premier temps, nous utilisons l'estimateur simple car bien qu'en partie 1, nous avons conclue qu'il est peu fiable au niveau du biais-variance, l'étude ne prennais pas en compte les propriétés de résolution fréquentielle. Or dans son cas, la formule est : $ Rfrequ = 1.28/2N $ or pour un N de 10000 nous obtenons une résolution précise et nous pouvons étudier facilement les éléments qui compose le spectre. \newline
+Cette première étude va permettre d'ajuster les paramètres des Estimateur Moyenné et de Welch, nous savons que la résolution fréquentielle est obtenu à l'aide de : $ Rfrequ = 1.28/2M $ or avec la première étude, il est apparus que deux composantes sont proches donc la taille de la fenêtre devra être grande pour obtenir une résolution fréquentielle suffisante.\newline
+Dans notre cas, empiriquement nous avons choisie une fenêtre d'une taille de 1000 et une transformée de Fourier de 1024 points. \newline
+Le soucis est que cette configuration ne fonctionne pas dans le cadre de l'estimateur Welch car sinon la Densité Spectrale "perd" une composante car elle est "absorbée" par une autre. Ainsi, nous somme contrains de doublé la taille de la fenêtre M.
 
 \subsubsection{Interprétations}
 
@@ -444,72 +460,251 @@ Décrivez précisément la démarche expérimentale suivie. Avec quelle méthode
 \renewcommand{\theenumi}{\Alph{enumi}}
 
 \item Que inconvénient majeur l'utilisation d'une fenêtre (d'apodisation en temps) engendre-t-elle?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+L'inconvénient majeur d'une telle méthode est que l'on va biasié notre estimateur par une convolution de sa transformée de Fourier. Et cette estimateur devient très variable car une partie son biais va dépendre du type de la fenêtre employé. \newline
+C'est pour cela qu'il est recommandé une fenêtre qui a une transformée de Fourier proche du Dirac car cela facilite l'étude de la convvolution.
 
 \item Décrire (sans dessin) la forme de la DSPM obtenue.
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+La DSPM se compose de 4 éléments qui sont similaires à des pics de Diracs et  aux fréquence réduite suivante (il s'agit de constatation graphique et donc imprécise) : 
+\begin{center}
+\begin{enumerate}
+    \item f1 = 0.12
+    \item f2 = 0.27
+    \item f3 = 0.31 
+    \item f4 = 0.33
+\end{enumerate}
+\end{center}
 
 \item Quelles informations la forme de cette DSPM apporte-t-elle sur le contenu (la nature) du signal?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+\newline
+Si l'on fait l'hypothèse que les Pics observés sont des Diracs alors à l'aide des propriétés de la transformée de Fourier, nous pouvons en déduire que ce signal inconnue correspond à la somme de 4 sinus avec des amplitudes et phases différentes.
 
 \item Quelles mesures concernant  les caractéristiques du signal peut-on effectuer sur la DSPM?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
-
+Les caractéristiques remarquable du signal sont les fréquences de ses composantes sur sa DSPM et les valeurs d'amplitudes des dites composantes.
 \end{enumerate}
 
-\end{document}
+\section{Annexes}
+\subsection{Fonction de la Partie 1 : }
+\subsubsection{Fonction de l'Estimateur Simple }
+\begin{verbatim}
+function  ESS(x,nd,nf,NFFT) ;
+    %Input : 
+    % x - séquence brut 
+    %nd - premier indice de la séquence Ã  analyser
+    %nf - dernier indice de la séquence Ã  analyser
+    %NFFT - nombre de points de TFD-N points
+    %Output : 
+    %None
+    
+    % ---Initialisation des variables ---
+    x_seq = x(nd : nf); %Sequence Ã  analyser
+    N = nf - nd +1; %Longueur de la sequence
+    
+    % ---Création de l'estimateur 1 ---
+    X = fft(x_seq,NFFT); %Transofrmée N points de la séquence  
+    gamma_x_c = ((abs(X)).^2)/N; %Estimation simple
+    log_gamma_x_c = 10*log10(gamma_x_c); %Passage au log (forme quadratique donc log * 10)
+    
+    % ---DSP moyenne vraie et (gamma(f) * Wbm(f))(f)
+    [Gth,Gbiais,fth]=sptheo(N,'simple');
+    f_abs = 0:1/NFFT:1-1/NFFT;
+    
+    % ---Partie affichage ---
+    figure(2)
+    plot(f_abs,log_gamma_x_c,fth,Gth,'k',fth,Gbiais,'r')
+    axis([0 0.5 -60 10])
+    legend('Estimation de la DSP','DSPMV','Convolution de la DSP et de la fenetre de Barlett')
+    title(["Etude de l'estimateur simple à une séquence de ",int2str(N)," échantillons"])
+end
+\end{verbatim}
+\newpage
+\subsubsection{Fonction de l'Estimateur Moyenné }
+\begin{verbatim}
+%% Code à saisir 
+\end{verbatim}
+\newpage
+\subsubsection{Fonction de l'Estimateur de Welch }
+\begin{verbatim}
+%% code à saisir
+\end{verbatim}
+\newpage
+\subsubsection{Code Main }
+\begin{verbatim}
+% ----
+%  Auteur : Philippe CHARRAT & Axel BRUYERE
+%  TP 2 - T.S.A : Estimateurs
+%  But : Partie 2
+% ----
+clc;clear variables;close all;
+
+% Génération d'un bruit blanc --- 
+s = genbrfil; % Fonction fournie sur Cpe-campus
+
+% génération des différents estimateurs
+ESS(s,1,1000,2^14);
+ESM(s,10000,500,512);
+ESW(s,10000,'rectwin',500,250,512);
 
 
+\end{verbatim}
+\newpage
+\subsection{Fonction de la Partie 2 : }
+\subsubsection{Fonction de l'Estimateur Simple }
+\begin{verbatim}
+function [gamma_x_c,f_abs] = ESS(x,nd,nf,NFFT) ;
+    %Inputs : 
+    % x - séquence brut 
+    %nd - premier indice de la séquence à  analyser
+    %nf - dernier indice de la séquence à  analyser
+    %NFFT - nombre de points de TFD-N points
+    %
+    %Outputs : 
+    %gamma_x_c = vecteur contenant la DS pour l'estimateur 1 
+    %fabs = vecteur d'abscisses 
+    
+    % ---Initialisation des variables ---
+    x_seq = x(nd : nf); %Sequence à  analyser
+    N = nf - nd +1; %Longueur de la sequence
+    
+    % ---Création de l'estimateur 1 ---
+    X = fft(x_seq,NFFT); %Transofrmée N points de la séquence  
+    gamma_x_c = ((abs(X)).^2)/N; %Estimation simple
+    f_abs = 0 : 1/NFFT: 1-1/NFFT;
 
+end
+\end{verbatim}
+\newpage
+\subsubsection{Fonction de l'Estimateur Moyenné }
+\begin{verbatim}
+function [gamma_xd_c,fabs] = ESM2(x,N,M,nfft)
+    % Inputs :
+    % x - séquence brut 
+    % N - nombre d'échantillons maximum
+    % M - nombre d'échantillons d'une sous fenÃªtre 
+    % nfft - nombre de points fft Ã  N points
+    % 
+    % Oututs :
+    % none 
+    
+    % Initialisation des variables ---
+    x_seq = x(1 : N); %sequence Ã  analyser
+    fenetre = rectwin(M); % Fenetre taille M << N
+    noverlap = 0; % Chevauchement 
+    
+    % Création de l'estimateur 2 ---
+    [gamma_xd_c,fabs] = pwelch(x_seq,fenetre,noverlap,nfft,1,'twosided');
+end
+\end{verbatim}
+\newpage
+\subsubsection{Fonction de l'Estimateur de Welch }
+\begin{verbatim}
+function [gamma_x_c,f_abs] = ESW2(x,N,fenetre_char,M,NOVERLAP,NFFT)
+    %Inputs : 
+    % x - séquence brut 
+    %nd - premier indice de la séquence à  analyser
+    %nf - dernier indice de la séquence à  analyser
+    %NFFT - nombre de points de TFD-N points
+    %fenetre_char : str contenant le type de la fenêtre
+    %Noverlap : la couvertures entre les différentes fenêtre en % 
+    %
+    %Outputs : 
+    %gamma_x_c = vecteur contenant la DS pour l'estimateur 3 
+    %fabs = vecteur d'abscisses 
+    % ---Initialisation des variables ---
+    x_seq = x(1:N);
+    eval(['WIN=',fenetre_char,'(M)']);
+    f_abs = 0:1/NFFT:1-1/NFFT;
+    
+% ---Création de l'estimateur 3---
+    [gamma_x_c,fabs] = pwelch(x_seq,WIN,NOVERLAP,NFFT,1,'twosided');  
+end
+\end{verbatim}
+\newpage
+\subsubsection{Code Main }
+\begin{verbatim}
+% ----
+%  Auteur : Philippe CHARRAT & Axel BRUYERE
+%  TP 1 - T.S.A : Estimateurs
+%  But : Partie 2
+% ----
+clc;
+clear variables;
+close all;
 
+% Partie Initialisation des différents estimateurs
+load('../sig.mat');
+[gamma_x_e1,fabs1] =ESS2(s,1,100000,2^14);
+[gamma_x_e2,fabs2] =ESM2(s,100000,1000,1024);
+[gamma_x_e3,fabs3] =ESW2(s,100000,'rectwin',2000,0.5,2048);
+    
+% Partie affichage ---
+figure(1);
+subplot(3,1,1)
+semilogy(fabs1,gamma_x_e1,'b');
+axis([0 0.5 -inf inf])
+legend('Estimateur 1')
+title("Représentation de l'estimateur simple en fonction du signal")
 
+subplot(3,1,2)
+semilogy(fabs2,gamma_x_e2,'b');
+axis([0 0.5 -inf inf])
+legend('Estimateur 2')
+title("Représentation de l'estimateur moyenné en fonction du signal ")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+subplot(3,1,3)
+semilogy(fabs3,gamma_x_e3,'b');
+axis([0 0.5 -inf inf])
+legend('Estimateur 3')
+title("Représentation de l'estimateur Welch en fonction du signal")
+\end{verbatim}
+\newpage
+\subsection{Figures de la Partie 1 : }
+\subsubsection{Figures de l'Estimateur Simple : cas à 1000 points}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESN1000.png}}
+\caption{Cas de N = 1000 points}
+\end{figure}
+\newpage
+\subsubsection{Figures de l'Estimateur Simple : cas à 10000 points}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESN100000.png}}
+\caption{Cas N = 10000 points }
+\end{figure}
+\newpage
+\subsubsection{Figures de l'Estimateur Simple : cas pour  NFFT >> N}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESN1000FFT214.png}}
+\caption{Cas N = 1000 et NFFT = 2\^14 points}
+\end{figure}
+\newpage
+\subsubsection{Figures de l'Estimateur Simple : cas pour Ndébut >> 1}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESN1000PD2000.PNG}}
+\caption{Cas N = 1000 et indice de début est 2000}
+\end{figure}
+\newpage
+\subsection{Figures de la Partie 2 : }
+\subsubsection{Figures général}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casgenpartie2.png}}
+\caption{Cas Général}
+\end{figure}
+\newpage
+\subsubsection{Figures de l'Estimateur Simple}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESSimpleSignalInconnue.png}}
+\caption{Cas pour l'estimateur simple}
+\end{figure}
+\newpage
+\subsubsection{Figures de l'Estimateur Moyenné}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESMSignalInconnue.png}}
+\caption{Cas pour l'estimateur moyenné}
+\end{figure}
+\newpage
+\subsubsection{Figures de l'Estimateur de Welch}
+\begin{figure}[h]
+\centerline{\includegraphics[width=1\textwidth]{images/casESWSignalInconnue.png}}
+\caption{Cas pour l'estimateur de Welch}
+\end{figure}
 
 \end{document}

@@ -1,4 +1,8 @@
-
+% ----
+%  Auteur : Philippe CHARRAT & Axel BRUYERE
+%  TP 1 - T.S.A : Estimateurs
+%  But : Partie 2
+% ----
 clc;
 clear variables;
 close all;
@@ -6,8 +10,8 @@ close all;
 %s = genbrfil;
 load('../sig.mat');
 [gamma_x_e1,fabs1] =ESS2(s,1,100000,2^14);
-[gamma_x_e2,fabs2] =ESM2(s,100000,5000,2^12);
-[gamma_x_e3,fabs3] =ESW2(s,10000,'rectwin',500,0.25,512);
+[gamma_x_e2,fabs2] =ESM2(s,100000,1000,1024);
+[gamma_x_e3,fabs3] =ESW2(s,100000,'rectwin',2000,0.5,2048);
     
 % Partie affichage ---
 figure(1);
