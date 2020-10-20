@@ -1,0 +1,16 @@
+clc;close all;clear variables;
+
+nu0 = 100;
+
+Sp = struct('Fs',500,'A',1,'Fc',nu0,'FM',0,'Phi',0,'T',100,'W',[])
+[S,Sp,M] = OOK(Sp) 
+plot(S.time,S.data,':r')
+
+Fp = struct('Fs',500,'F0',nu0,'Dnu',16,'order',6,'class','BP filter') ;  
+Y = BPF(S,Fp);
+
+puissance = trapz(S.time,(S.data).^2)/100;
+puissanceB = trapz(Y.time,(Y.data).^2)/100;
+amplitude = max(S.data);
+
+
