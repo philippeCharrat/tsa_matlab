@@ -68,6 +68,6 @@ for i=1:3
     moyenneV = mean(Wb.data);
     varianceV = (std(Wb.data)).^2;
     kurtosiV = kurtosis(Wb.data);
-    legend(strcat("indice de début != 0 -> Moy=",num2str(moyenneV)," Var=",num2str(varianceV)," Var=",num2str(varianceV)," k=",num2str(kurtosiV))); 
-    title(strcat("signal WB(t) DeltaV = 16Hz et un RC: ",num2str(RCp.RC)," & v x Rc = ",num2str(RCp.RC*16)," Moy=",num2str(moyenne)," Var=",num2str(variance)," Var=",num2str(variance)," k=",num2str(kurtosi))); 
+    legend(strcat("indébut=0->Moy=",num2str(moyenneV)," Var=",num2str(varianceV)," Var=",num2str(varianceV)," k=",num2str(kurtosiV))); 
+    title(strcat("WB(t) pour  RC: ",num2str(RCp.RC)," vxRc=",num2str(RCp.RC*16)," Moy=",num2str(moyenne)," Var=",num2str(variance)," k=",num2str(kurtosi))); 
 end 
