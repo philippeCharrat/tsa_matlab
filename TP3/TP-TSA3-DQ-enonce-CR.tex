@@ -228,27 +228,50 @@ Avec les paramètres déterminés en préparation, reproduire dans le cadre ci-d
 \item de générer une réalisation du bruit $B(t)$ sur une durée $T=100~s$ \\ Afficher la sortie de {\tt CGN.m} dans la Figure 1 ({\bf veillez à ajouter des légendes pertinentes})
 \item de mesurer sur la trace de bruit ainsi obtenu les paramètres demandés à la Table \ref{tab-B}.
 \end{list}
-
-\debutrep{code ci-dessous}
+\newline
+Pour réaliser la séquence de bruit, nous avons utilisé la fonction \textit{CGN} (disponible sur CPe-Campus). Cette fonction génère une structure en fonction 4 paramètres, un entier pour l'écart-type, un entier pour la fréquence échantillonnage, un entier pour la bande passante du bruit et un pour la durée du signal.   
 \begin{verbatim}
+% -------
+% Nom : partie1.c
+% But : Étude du bruit 
+% ------
 
+% --- initialisaitons des variables
+tmax = 100;
+fs = 500;
+v0 = 100;
+b = 160;
+delta_v = 16;
+
+% --- Création du bruit
+Xp = struct('sigma',sqrt(5),'Fs',fs,'B',b,'T',tmax) ;
+[X,Xp] = CGN(Xp);
+
+% --- Calcule des valeurs particulières 
+moyennedeB = mean(X.data);
+variancedeB = (std(X.data))^2;
+P_B_X = trapz(X.time,(X.data).^2)/tmax;
+Gamma_X = P_B_X/(2*b);
 \end{verbatim}
-\finrep
 
-
-\debutrep{figure ci-dessous}
 \begin{figure}
+\centerline{\includegraphics[width=0.7\textwidth]{images/bruitgenere.png}}
+\caption{Réalisation du bruit avec la légende contenant la moyenne, l'écart-type, $\Gamma0$ empirique.}
+\label{fig-B}
+\end{figure}
 
+\begin{figure}
+\centerline{\includegraphics[width=0.7\textwidth]{images/bruitgen_G.png}}
 \caption{Réalisation et densité spectrale de puissance moyenne  du bruit: $B=160~Hz$, $P_B= 5~V^2$, $\sigma_B = \sqrt{5}$, $\mu_B=0$.}
 \label{fig-B}
 \end{figure}
-\finrep
+\newpage
 
 \begin{table}[h]
 \begin{center}
 \begin{tabular}{| L{40mm} | C{40mm}|}\hline
-Moyenne $B(t)$ 		&  	\\[5mm] \hline
-Variance $B(t)$ 		&  	\\[5mm] \hline
+Moyenne $B(t)$ 	& {$-1.8543 * 10^-17$}  	\\[5mm] \hline
+Variance $B(t)$ & {$5$}   	\\[5mm] \hline
 \end{tabular}
 \end{center}
 \label{table-B}
@@ -256,13 +279,15 @@ Variance $B(t)$ 		&  	\\[5mm] \hline
 \label{tab-B}
 \end{table}
 
-
-
-A partir  de la Figure \ref{fig-B} et en expliquant la démarche suivie, retrouver (approximativement) la valeur de $\Gamma_0$. Comparer à la valeur théorique de la préparation.
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+A partir  de la Figure \ref{fig-B} et en expliquant la démarche suivie, retrouver (approximativement) la valeur de $\Gamma_0$. Comparer à la valeur théorique de la préparation.\\
+\newline
+Dans la préparation, nous avons établi que le $\Gamma_0$ théorique vaut -18dB. Pour retrouver la valeur $\Gamma_0$ empirique, nous avons appliqué deux méthodes qui sont : 
+\begin{itemize}
+    \item  Méthode graphique : le $\Gamma_0$ correspond à la valeurs moyenne dans l'intervalle 0 à B (160 Hz). Sur la figure 2, nous observons que nous somme à un $\Gamma_0$ d'environ -18dB. 
+    \item  Méthode de calcul empirique : nous pouvons calculer la Densité Spectrale de Puissance Moyenne (DSPM) à l'aide de la méthode des trapèzes et obtenir $\Gamma_0$ en divisant la DSPM par 2 fois la Bande passante. On obtient 0,01526, si l'on applique : $\Gamma_0 = 20*log(resultat)$ soit environ -18.063 dB.  
+\end{itemize}
+Nous pouvons en déduire que les valeurs empiriques sont cohérentes avec les valeurs théorique.
+\newpage
 
 \subsection{Etude du filtre passe-bande $\mathcal{F}_1$}
 \label{sec:bruit-passe-bande}
@@ -278,26 +303,44 @@ Reproduire dans le cadre ci-dessous, le code permettant de:
 \item filtrer le bruit $B(t)$ par le filtre $\mathcal{F}_1$ (afficher avec des légendes pertinentes, la sortie du {\tt BPF.m} dans la Figure \ref{fig-Y}) 
 \item de mesurer sur la trace en sortie du filtre $\mathcal{F}_1$ les valeurs des paramètres demandés au Tableau 2:
 \end{list}
-
-\debutrep{code ci-dessous}
+\newline
+Pour réaliser le filtre, nous avons utilisé la fonction \textit{BPF} (disponible sur CPe-Campus). Cette fonction génère une structure du signal filtré en fonction de 2 structures, la première qui est le bruit généré partie 1. La seconde partie est une structure contenant entier pour la fréquence d'échantillonnage, un entier pour la fréquence nu0, un entier pour le $\Delta_v$ et un entier pour l'ordre du filtre.  
 \begin{verbatim}
+% --- initialisaitons des variables
+v0 = 100;
+delta_v = 16;
 
+% --- Création et filtrages s
+Fp = struct('Fs',fs,'F0',v0,'Dnu',delta_v,'order',6,'class','BP filter') ;  
+Y = BPF(X,Fp) ;
+
+% --- Calculs des variables utiles
+moyennedeBF = mean(Y.data);
+variancedeBF = (std(Y.data))^2;
+P_B_Y = trapz(Y.time,(Y.data).^2)/tmax;
+Gamma_Y = P_B_Y/(2*b);
 \end{verbatim}
-\finrep
 
-\debutrep{figure ci-dessous}
+
+
 \begin{figure}[h]
-
+ \centerline{\includegraphics[width=0.7\textwidth]{images/filtreinit.png}}
  \caption{Bruit Y(t) filtré passe-bande pour $\Delta\nu = \dnu$ Hz}
  \label{fig-Y}
 \end{figure}
-\finrep
 
+\begin{figure}[h]
+ \centerline{\includegraphics[width=0.7\textwidth]{images/bruitfiltre.png}}
+ \caption{Bruit Y(t) filtré passe-bande pour $\Delta\nu = \dnu$ Hz}
+ \label{fig-Y}
+\end{figure}
+
+\newpage
 \begin{table}[t]
 \begin{center}
 \begin{tabular}{| L{40mm} | C{40mm}|}\hline
-Moyenne $Y_{B}(t)$ 	&  	\\[5mm] \hline
-Variance $Y_{B}(t)$ 	&   	\\[5mm] \hline
+Moyenne $Y_{B}(t)$ 	& { 0 } 	\\[5mm] \hline
+Variance $Y_{B}(t)$ &{ 0.46239 }   	\\[5mm] \hline
 \end{tabular}
 \end{center}
 \caption{Mesures de la moyenne et de la variance de $Y_{B}(t)$.}
@@ -306,22 +349,17 @@ Variance $Y_{B}(t)$ 	&   	\\[5mm] \hline
 
 \subsubsection{}
 
-Estimer la valeur de $\Gamma_0$. Comparer les mesures ($\overline{P}_{Y_B}$ et $\Gamma_0$) aux valeurs théoriques obtenues en préparation. Comment peut on expliquer les éventuelles différence?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+Estimer la valeur de $\Gamma_0$. Comparer les mesures ($\overline{P}_{Y_B}$ et $\Gamma_0$) aux valeurs théoriques obtenues en préparation. Comment peut on expliquer les éventuelles différence?\\
+\newline
+Dans la préparation, nous avons établi que le $PB$ théorique vaut 0.5, or la valeur $PB$ empirique est 0.4623 donc on obtient une variation d'environ 0.04. Cette variation peut être expliquer par l'utilisation de réalisation aléatoire empirique qui entraîne une variation sur les paramètres. Le $\Gamma_0$ empirique est de 0.001449 or la valeur $\Gamma_0$ théorique vaut 0.015 donc le filtre entraine aussi une variation sur la DSPM.  
 
 \subsubsection{}
-En pratique, qu'est ce qui limite le choix d'une  bande passante $\Delta \nu$ trop étroite?
+En pratique, qu'est ce qui limite le choix d'une  bande passante $\Delta \nu$ trop étroite ?\\
+\newline
+A l'aide de la relation entre temps et fréquence, si nous prenons une bande passante très étroites alors la réponse impulsionelle sera lente. Ainsi, il faut trouver un compromis en fonction du cahier des charges.   
 
-\debutrep{réponse ci-dessous}
-
-\finrep
-
-
+\newpage
 \subsection{Elévation au carré et Filtrage RC passe-bas}
-
 \subsubsection{}
 
 Comme précédemment, on choisit $\Delta\nu = \dnu Hz$. En faisant varier le produit $\Delta \nu \times RC$ dans une boucle (du type {\tt for \ldots end}), donner dans le cadre ci-dessous, le code qui:
@@ -333,67 +371,82 @@ Comme précédemment, on choisit $\Delta\nu = \dnu Hz$. En faisant varier le pro
 \item mesure sur la sortie $W_B(t)$ les paramètres demandés dans la  Table \ref{table-WB}
 \end{list}
 
-\debutrep{code ci-dessous}
 \begin{verbatim}
+% --- initialisaitons des variables
+RC = 0;
+tab_RC_dV = [2 20 100];
+tab_Wb = [];
+tab_RCP = [];
 
+% --- Passage du signal dans le Quadrateur
+Z_b = SquareSig(Y);
+
+% --- Boucles de traitements des 3 cas
+for i=1:3
+    figure(3+i)
+    % --- Calcul de la valeur RC en fonction du produit
+    RC_dV = tab_RC_dV(i);
+    RC = RC_dV/delta_v;
+    % --- initialisaitons de la structure en fonction
+    RCFp = struct('Fs',fs,'RC',RC);
+    [Wb,RCFp] = RCF(Z_b,RCFp);
+    tab_Wb = [tab_Wb; Wb];
+    tab_RCP = [tab_RCP; RCFp];
+end
 \end{verbatim}
-\finrep
+
 
 Remplir le tableau de mesures de la Table \ref{table-WB} (ignorez dans un premier temps les mesures demandées {\em après correction}).
 
 \begin{table}[h]
 \begin{tabular}{| L{40mm} | C{35mm} | C{35mm} | C{35mm} |}\hline
 $\Delta\nu \times RC$ & 2 & 20 & 100 \\[5mm]  \hline\hline
-$RC$ &  &  & \\[5mm]  \hline \hline
-moyenne $W_B(t)$ 	& 	& 	& 	 \\[5mm] \hline
-variance $W_B(t)$ 	& 	& 	&	 \\[5mm]  \hline
-Kurtosis $W_B(t)$ 	&  	& 	& 	 \\[5mm]  \hline \hline
-moyenne $W_B(t)$ \newline (après correction) 	& 	&	&	\\[5mm] \hline
-variance $W_B(t)$ \newline (après correction) 		&	&	&	\\[5mm]  \hline
-Kurtosis $W_B(t)$  \newline (après correction)		&	&	&	\\[5mm]  \hline
+$RC$ & 1/8  & 5/4 & 6.25 \\[5mm]  \hline \hline
+moyenne $W_B(t)$  & 0.46185	& 0.4558	& 0.43242 	 	 \\[5mm] \hline
+variance $W_B(t)$ 	& 0.4528	& 0.0059138	&	0.0060582 \\[5mm]  \hline
+Kurtosis $W_B(t)$ 	& 5.3958 	& 6.6982	& 14.0553 \\[5mm]  \hline \hline
+moyenne $W_B(t)$ \newline (après correction) 	& 0.4628	&	0.4605 & 0.45574	\\[5mm] \hline
+variance $W_B(t)$ \newline (après correction) 		& 0.4628	& 0.0046886	&	 0.0039945\\[5mm]  \hline
+Kurtosis $W_B(t)$  \newline (après correction)		& 5.4117	& 2.9536	&	2.36328 \\[5mm]  \hline
 \end{tabular}
 \caption{Sortie Filtre $RC$ - Cas du bruit seul.}
 \label{table-WB}
 \end{table}
 
 \subsubsection{}
-Le processus $Z_B(t)$ (\textbf{signal en sortie du quadrateur}) est-il gaussien? Pourquoi?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
-
+Le processus $Z_B(t)$ (\textbf{signal en sortie du quadrateur}) est-il gaussien? Pourquoi?\\
+\newline
+Nous étudions un processus aléatoire qui est un un bruit Gaussien centré généré à partir de la fonction \textit{rand}. Ce processus est filtré par un filtre linéaire et passé dans le Quadrateur, or aucun des deux éléments altère la nature du signal. Donc on observe un processus Gaussien.
 \subsubsection{}
 Pour les 2 valeurs extrêmes de $\Delta\nu \times RC$ proposées dans la Table \ref{table-WB}, afficher dans la Figure ci-dessous, les sorties de {\tt RCF.m}.
 
-\debutrep{figure ci-dessous}
 \begin{figure}[h]
 \begin{tabular}{cc}
-(a) & (b) \\
+\includegraphics[width=0.5\textwidth]{images/rc_1.PNG} & \includegraphics[width=0.5\textwidth]{images/rc_3.png} \\
 \end{tabular}
  \caption{Sortie $W_B(t)$ du filtre passe-bas pour $\Delta\nu = 16$ Hz -- 
-  (a) $RC$ = ???. ($\Delta\nu\times RC=??? $) (b) $RC = ??? $ ($\Delta\nu\times RC = ??? $) }
+  (a) $RC$ = 1/8. ($\Delta\nu\times RC=2 $) (b) $RC = 6.25 $ ($\Delta\nu\times RC = 100 $) }
  \label{fig-Wb}
 \end{figure}
-\finrep
-
 
 \subsubsection{}
 
 Comparer pour chaque valeur de la constante $RC$, la valeur moyenne mesurée à la valeur théorique déterminée dans la préparation. Qu'est ce qui peut expliquer ces différences? Comment corriger cet effet?  \\
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+\newline
+Nous possédons un régime transitoire sur le filtre RC qui impacte les premières valeurs et qui biaises les indicateurs tel que la moyenne ou le Kurtosis.Ce régime dure environ 5 tau, donc on doit atteindre le régime permanent avant de mesurer les indicateurs. Cela se traduit en MATLAB  par ignorer les \textit{n} valuers pour n correspodnat 5 tau des vecteurs datas et time de la structure Z.
 
 \subsubsection{}
 Donner dans l'encadré ci-dessous les 2 lignes de code qui implémentent cette solution.
 
-\debutrep{code ci-dessous}
 \begin{verbatim}
+% --- Le premier indice > 5*tau
+itrue = Wb.time >= 5*RCp.RC;
 
+% --- Calcul des divers indicateurs
+moyenne = mean(Wb.data(itrue));
+variance = (std(Wb.data(itrue))).^2;
+kurtosi = kurtosis(Wb.data(itrue));
 \end{verbatim}
-\finrep
 
 Appliquer cette correction et porter les nouvelles mesures dans la Table \ref{table-WB} (partie {\em avec correction}).
 
@@ -401,11 +454,14 @@ Appliquer cette correction et porter les nouvelles mesures dans la Table \ref{ta
 \subsubsection{}
 Lorsque le Kurtosis est proche de $3$, que peut on dire de la statistique du processus $W_B(t)$? \\
 \textbf{Quel théorème important ce résultat illustre-t-il?}\\
- Pour quelles(s) valeur(s) de $RC$ a-t-on une {\em intégration forte}?  Comparer les variances de $W_B(t)$ mesurées pour les deux valeurs extrêmes de $RC$. 
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+ Pour quelles(s) valeur(s) de $RC$ a-t-on une {\em intégration forte}?  Comparer les variances de $W_B(t)$ mesurées pour les deux valeurs extrêmes de $RC$. \\
+\newline
+Ces résultats illustrent le théorème Centrale Limite. Dans le cas d'un processus Gaussien, la valeur du Kurtosis est à 3. Pour étudier la valeur du Kurtosis rigoureusement, il faudrait réaliser un grand nombre fois le processus aléatoire et étudier la moyenne des valeurs obtenues car la valeur Kurtosis d'un processus aléatoire varie à chaque réalisation . 
+\newline
+L'intégration forte est l'approximation que les éléments portes et triangles autours de $\delta = 0$ sont très large et constant devant le module carrée de H(v). Pour assurer cette hypothèse il faut que $1/RC << \Delta_V$.
+\newline
+Dans notre cas, une simple étude d'une valeur suffit à déduire que les processus sont Gaussiens pour les valeurs 5/4 et 6.25 de RC, nous pouvons en déduire que plus le résultat $\Delta_v$*RC est important et plus le processus sera proche d'un processus Gaussien. 
+\newline
 
 \textbf{Dans la suite du TP, il faudra systématiquement appliquer cette correction aux mesures effectuées en sortie du filtre RC.}
 
