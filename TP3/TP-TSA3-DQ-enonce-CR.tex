@@ -578,12 +578,68 @@ synthétiser les  signaux $S(t)$,  $B(t)$ et $X(t)$ correspondant. \\
 En vous basant sur les résultats expérimentaux obtenus dans la partie \ref{sec:melange}, choisissez un jeu de paramètres pertinent pour calibrer les filtres 
 $\mathcal{F}_1$ et $\mathcal{H}_I$. Reporter dans le cadre ci-dessous le code  de détection du signal binaire reçu. 
 
-\debutrep{code ci-dessous}
 \begin{verbatim}
 
-\end{verbatim}
-\finrep
+% -------
+% Nom : partie3.c
+% But : Étude d'un signal mélangé avec du bruit  
+% ------
+% --- Initialisation des variables 
+nu0 = 100;
+b = 160;
+A0 = 1;
+T = 100;
+Fs = 500;
+delta_v = 16;
 
+% --- initialisation du filtre passe-bas 
+Fp = struct('Fs',500,'F0',nu0,'Dnu',16,'order',6,'class','BP filter') ;
+% --- Initialisation du bruit ---- 
+Xp = struct('sigma',sqrt(5),'Fs',Fs,'B',b,'T',T) ;
+[X,Xp] = CGN(Xp);
+% --- Initialisation de la séquence ON-OFF
+Sp = struct('Fs',Fs,'A',A0,'Fc',nu0,'FM',0.05,'Phi',0,'T',T,'W',[]);
+[S,Sp,M] = OOK(Sp);
+
+% --- Affichage des puissances des signaux d'origine 
+Zs = SquareSig(S);
+moyenneSignalOrigin = mean(Zs.data)
+Xs = SquareSig(X);
+moyenneBruitOrigin = mean(Xs.data)
+
+% --- Création de la séquence avec du bruit ---
+Signalbruite = AddSig(X,S);
+
+% --- Filtrage du signal bruité avec le filtre ---
+Y = BPF(Signalbruite,Fp);
+Z = SquareSig(Y);
+
+RC = 100/delta_v
+RCFp = struct('Fs',Fs,'RC',RC);
+[Wb,RCFp] = RCF(Z,RCFp);
+% --- Calcul de la moyenne, l'écart-type et le Kutosis sans le régime transitoire
+itrue = Wb.time >= 5*RCFp.RC;
+moyenne = mean(Wb.data(itrue));
+variance = (std(Wb.data(itrue))).^2;
+kurtosi = kurtosis(Wb.data(itrue));
+Z_wb = SquareSig(Wb);
+
+% --- Création du signal final --- 
+nombre_indice = length(Wb.data);
+signal_final = zeros(1,nombre_indice);
+
+% --- Parcours du signal en sortit du filtre 
+for i =1:nombre_indice
+    % Si la valeur i du signal est supérieur au seuil alors on l'ajoute dans le nouveaux signal.
+    if Wb.data(i) > 0.71
+        signal_final(i) = 1;
+    end 
+end
+
+% --- Partie Affichage tronquée ---
+\end{verbatim}
+
+\newpage
 \subsubsection{}
 
 Visualiser dans la Figure \ref{fig-binaire}  (en organisant avec la commande {\tt subplot(4,1,$\cdot$)} et en ajoutant une légende pertinente), les signaux:\\[-3mm]
@@ -593,41 +649,39 @@ Visualiser dans la Figure \ref{fig-binaire}  (en organisant avec la commande {\t
 \item[--] $W(t)$
 \item[--] Le signal binaire détecté obtenu par seuillage du signal $W(t)$ (commenter le choix du seuil $\Sigma$ choisi)
 \end{list} 
-
-\debutrep{figure ci-dessous}
-\begin{figure}
-\begin{tabular}{cc}
-(a) & (b) \\
-(c) & (d) \\
-\end{tabular}
+\newpage
+\begin{figure}{h}
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/partie3.png}
 \caption{(a) Signal binaire $S(t)$. (b) Mélange Signal (binaire) + bruit avant et apres filtrage passe-bande. (c) Sortie $W(t)$ de la chaine de détection quadratique. (d) Signal binaire détecté après seuillage de la sortie quadratique.}
 \label{fig-binaire}
 \end{figure}
-\finrep
-
 
 \subsubsection{}
 
 Indiquez les valeurs des paramètres de détection utilisés.
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+\begin{list}{-}{\setlength{\leftmargin}{9mm} \setlength{\labelwidth}{20mm} \setlength{\labelsep}{2mm} \setlength{\itemsep}{1mm} }
+\item[--] La fréquence de Coupure $Fc$ est à 100 Hz.
+\item[--] La partie 2, nous a permis de fixer le filtre RC à 1.25.
+\item[--] Le seuil a été fixé à 0.71 de manière empirique avec comme donné que l'amplitude du signal était 1. 
+\end{list} 
 
 \subsubsection{}
 
-Essentiellement quel élément de la chaine de détection va-t-il limiter le débit de transmission?
+Essentiellement quel élément de la chaine de détection va-t-il limiter le débit de transmission?\\
+\newline
+Il s'agit du filtre  qui va limiter le débit de transmission. Si le filtre n’est pas adapté, il y aura l'apparation de 1 ou 0 non cohérent. Alors, en sortie nous aurons un signal qui ne sera pas régulier et plus cohérent.
 
-\debutrep{réponse ci-dessous}
-
-\finrep
 
 \subsubsection{}
 Sans chercher à les estimer ici, quel(s) critère(s) permettrai(en)t de mesurer la qualité de la détection?
-
-\debutrep{réponse ci-dessous}
-
-\finrep
+\newline
+Pour estimer 
+\begin{list}{-}{\setlength{\leftmargin}{9mm} \setlength{\labelwidth}{20mm} \setlength{\labelsep}{2mm} \setlength{\itemsep}{1mm} }
+\item[--] Pour l'estimation, il faudrait faire la moyenne de chaque composantes et les sommer pour vérifier si nous obtenons une somme proche de la moyenne théorique.
+\item[--] Pour la variance, il faudrait retirer la condition \textit{ signal(i) = 1}, pour ajouter  \textit{ signal(i) = wb(i)}. Ainsi, nous pourrions étudier la dispersion de l'amplitude. 
+\item[--] La capacité à observer des pics proches en fréquence. 
+\end{list} 
 
 
 \subsection{Décodage d'un message inconnu}
@@ -639,12 +693,26 @@ Le signal $X(t)$ correspond à un message codé (code ascii 7 bits) transmis par
 Exécuter  la  commande: \\[2mm]
 {\tt >\!> [TxMsg,Xp] = RxMessage\_DQ(X,Xp) ; }  \\[2mm]
 pour lancer une détection quadratique {\em automatique} sur le signal reçu $X$ (la structure $Xp$ contient tous les paramètres de la transmission).
-Ajuster en ligne, les différents paramètres de la détection jusqu'à ce que le message décodé vous semble satisfaisant. Recopier ci-dessous, le message décodé. 
+Ajuster en ligne, les différents paramètres de la détection jusqu'à ce que le message décodé vous semble satisfaisant. Recopier ci-dessous, le message décodé. \\
 
-\debutrep{réponse ci-dessous}
+\newline
+Aucun numéro de binome ne nous a été distribué donc nous avons choisi de manière arbitraire le 21. \newline
+Nous avons agis de manière empirique en testant de manière progressive les valeurs de $\Sigma$
 
-\finrep
-
+\begin{verbatim}
+Received message ---> 
+New threshold value [1.27] ? = 1
+Received message --->  ☐☐☐2☐@
+New threshold value [1] ? = 0.75
+Received message --->  El@Jl`Alassa@e&i`nDraduClfnaB
+New threshold value [0.75] ? = 0.5
+Received message --->  Demain,lamelassedeviendrad}cognac
+New threshold value [0.5] ? = 0.45
+Received message --->  Demay~<la`melawsedeviendza}`cognak
+New threshold value [0.55] ? = 0.55
+Received message --->  Demain,lamelassedeviendraducognac
+\end{verbatim}
+On a obtenue pour $\Sigma = 0.55$, la phrase Demain,lamelassedeviendraducognac
 
 \section{Annexes}
 
@@ -881,3 +949,4 @@ Ajuster en ligne, les différents paramètres de la détection jusqu'à ce que l
 
 
 
+s
