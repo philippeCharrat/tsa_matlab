@@ -3,7 +3,7 @@ clc;close all;clear variables;
 % --- Initialisation des variables 
 nu0 = 100;
 b = 160;
-A0 = 1.5;
+A0 = 1;
 T = 100;
 Fs = 500;
 delta_v = 16;
@@ -30,7 +30,7 @@ Signalbruite = AddSig(X,S);
 Y = BPF(Signalbruite,Fp);
 Z = SquareSig(Y);
 
-RC = 100/delta_v
+RC = 20/delta_v
 RCFp = struct('Fs',Fs,'RC',RC);
 [Wb,RCFp] = RCF(Z,RCFp);
 % --- Calcul de la moyenne, l'écart-type et le Kutosis sans le régime transitoire
@@ -48,8 +48,8 @@ signal_final = zeros(1,nombre_indice);
 for i =1:nombre_indice
     % Si la valeur i du signal est supérieur aux filtres alors on l'ajoute
     % dans le nouveaux signal.
-    if Wb.data(i) > 1.1
-        signal_final(i) = Wb.data(i);
+    if Wb.data(i) >= 0.71
+        signal_final(i) = 1;
     end 
 end
 
