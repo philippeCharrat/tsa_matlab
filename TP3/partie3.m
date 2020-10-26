@@ -74,3 +74,6 @@ plot(signal_final, '.r');
 xlabel("temps");
 ylabel("Amplitude");
 title("Signal final");
+
+load SignalRecu_21
+[TxMsg,Xp] = RxMessage_DQ(X,Xp) ;
