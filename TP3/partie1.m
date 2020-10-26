@@ -13,7 +13,9 @@ tab_Wb = [];
 tab_RCP = [];
 
 Xp = struct('sigma',sqrt(5),'Fs',fs,'B',b,'T',tmax) ;
+
 [X,Xp] = CGN(Xp);
+figure(9);
 Fp = struct('Fs',fs,'F0',v0,'Dnu',delta_v,'order',6,'class','BP filter') ;  
 Y = BPF(X,Fp) ;
 
