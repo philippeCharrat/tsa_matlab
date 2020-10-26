@@ -3,10 +3,9 @@ clc;close all;clear variables;
 % --- Initialisation des variables 
 nu0 = 100;
 b = 160;
-A0 = 1;
+A0 = 1.5;
 T = 100;
 Fs = 500;
-RC = 2;
 delta_v = 16;
 
 % --- initialisation du filtre passe-bas 
@@ -15,7 +14,7 @@ Fp = struct('Fs',500,'F0',nu0,'Dnu',16,'order',6,'class','BP filter') ;
 Xp = struct('sigma',sqrt(5),'Fs',Fs,'B',b,'T',T) ;
 [X,Xp] = CGN(Xp);
 % --- Initialisation de la séquence ON-OFF
-Sp = struct('Fs',Fs,'A',A0,'Fc',nu0,'FM',0.0,'Phi',0,'T',T,'W',[]);
+Sp = struct('Fs',Fs,'A',A0,'Fc',nu0,'FM',0.05,'Phi',0,'T',T,'W',[]);
 [S,Sp,M] = OOK(Sp);
 
 % --- Affichage des puissances des signaux d'origine 
@@ -31,7 +30,7 @@ Signalbruite = AddSig(X,S);
 Y = BPF(Signalbruite,Fp);
 Z = SquareSig(Y);
 
-RC = 200/delta_v
+RC = 100/delta_v
 RCFp = struct('Fs',Fs,'RC',RC);
 [Wb,RCFp] = RCF(Z,RCFp);
 % --- Calcul de la moyenne, l'écart-type et le Kutosis sans le régime transitoire
@@ -41,5 +40,37 @@ variance = (std(Wb.data(itrue))).^2;
 kurtosi = kurtosis(Wb.data(itrue));
 Z_wb = SquareSig(Wb);
 
+% --- Création du signal final --- 
+nombre_indice = length(Wb.data);
+signal_final = zeros(1,nombre_indice);
+
+% --- Parcours du signal en sortit du filtre 
+for i =1:nombre_indice
+    % Si la valeur i du signal est supérieur aux filtres alors on l'ajoute
+    % dans le nouveaux signal.
+    if Wb.data(i) > 1
+        signal_final(i) = Wb.data(i);
+    end 
+end
+
 figure(4) 
-subplot(
+subplot(4,1,1)
+plot(S.data);
+xlabel("temps");
+ylabel("Amplitude");
+title("Signal d'origine");
+subplot(4,1,2)
+plot(Signalbruite.data);
+xlabel("temps");
+ylabel("Amplitude");
+title("Signal Bruité");
+subplot(4,1,3)
+plot(Wb.data);
+xlabel("temps");
+ylabel("Amplitude");
+title("Signal en sortie du filtre");
+subplot(4,1,4)
+plot(0:1,signal_final, '.r');
+xlabel("temps");
+ylabel("Amplitude");
+title("Signal final");
