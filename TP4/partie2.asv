@@ -2,11 +2,11 @@ clc;close all;clear variables;
 
 %1. Signal et contexte
     [s,Fs] = audioread('ProtestMonoBruit.wav');
-    time_max = length(s)/Fs;
-    time = 0:time_max/length(s):time_max-(time_max/length(s));
+    temps_max = length(s)/Fs;
+    temps = 0:temps_max/length(s):temps_max-(temps_max/length(s));
     %Partie affichage
     figure(1)
-    plot(time,s)
+    plot(temps,s)
     axis tight
     xlabel('Temps(s)')
     ylabel('Signal reçu')
@@ -14,10 +14,10 @@ clc;close all;clear variables;
 %2. Estimation de la fonction d'autocorrélation
     %Initialisation des variables
     K = 200
-    time_60 = find(time==60);
-    time_70 = find(time==70);
-    time2 = time(time_60:time_70);
-    s2 = s(time_60:time_70);
+    indice_temps_60 = find(temps==60);
+    indice_temps_70 = find(temps==70);
+    time2 = temps(indice_temps_60:indice_temps_70);
+    s2 = s(indice_temps_60:indice_temps_70);
     %Autocorrélation
     [R,lags] = xcorr(s,K,'biased');
     %Partie affichage
@@ -32,7 +32,7 @@ clc;close all;clear variables;
     xlabel('Retards')
     ylabel('Corrélations')
     title("Fonction d'autocorrélation calculée pour K = 200") 
-    close all
+    
 %3. Identification du modèle AR(M)
     %Initialisation des variables
     M = 20;
@@ -62,7 +62,38 @@ clc;close all;clear variables;
     %Partie affichage
     figure(4)
     stem(h)
-    xlabel('
+    xlabel('Indices k')
+    ylabel('h[k]')
+    title('Coefficients du modèle AR(M) obetnus')
+    close all
+    
+%4. Prédiction linéaire
+    %Initialisation des variables
+    p = 1;
+    s_chapeau = zeros(1,length(s2));
+    for n = indice_temps_60:indice_temps_70
+        somme = 0;
+        for k = 1:M
+            %s_chapeau vaut la somme des s(n-k)
+            somme = somme + h(k)*s(n-k);
+        end
+        s_chapeau(p) = somme;
+        p = p+1;
+    end
+    %Partie affichage
+    figure(5)
+    subplot(211)
+    plot(time2,s2,'r',time2,s_chapeau,'b')
+    xlabel('Temps(s)')
+    ylabel('
+    legend("Signal d'origine (entre 60 et 70s)","Signal prédit (entre 60 et 70s)")
+    
+    subplot(212)
+    plot(time2,s_chapeau-s2','r')
+    xlabel('Temps(s)')
+    ylabel('Amplitude')
+    title('Erreur quadratique')
+    
     
 
 
