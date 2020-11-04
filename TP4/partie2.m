@@ -65,7 +65,6 @@ clc;close all;clear variables;
     xlabel('Indices k')
     ylabel('h[k]')
     title('Coefficients du modèle AR(M) obetnus')
-    close all
     
 %4. Prédiction linéaire
     %Initialisation des variables
@@ -80,6 +79,7 @@ clc;close all;clear variables;
         s_chapeau(p) = somme;
         p = p+1;
     end
+    erreur_quad = s_chapeau-s2';
     %Partie affichage
     figure(5)
     subplot(211)
@@ -90,15 +90,28 @@ clc;close all;clear variables;
     title("Signaux d'origine et prédit entre t = 60s et t = 70s")
     
     subplot(212)
-    plot(time2,s_chapeau-s2','r')
+    plot(time2,erreur_quad,'r')
     xlabel('Temps(s)')
     ylabel('Amplitude')
     title('Erreur quadratique')
     
-%5. Restauration par seuillage 
     
-
-
+    
+%5. Restauration par seuillage 
+    seuil = 0.015;
+    crak = find(abs(erreur_quad)>=seuil);
+    for k = 1:1:length(crak)
+        s_chapeau(crak(k)) = median(s(indice_temps_60+crak(k)-10:indice_temps_60+crak(k)+10));
+    end
+    erreur_quad = s_chapeau - s2';
+    figure(6)
+    subplot 211
+    plot(time2,s_chapeau)
+    subplot 212
+    plot(time2,erreur_quad)
+    
+    %sound(s2,Fs)
+    sound(s_chapeau,Fs)
 
 
 
