@@ -104,12 +104,11 @@ clc;close all;clear variables;
         s_chapeau(crak(k)) = median(s(indice_temps_60+crak(k)-10:indice_temps_60+crak(k)+10));
     end
     erreur_quad = s_chapeau - s2';
-    figure(6)
+    figure(9)
     subplot 211
     plot(time2,s_chapeau)
     subplot 212
     plot(time2,erreur_quad)
-    close all
     
 %6. Restauration par prédiction causale/anticausale
     p = 1;
