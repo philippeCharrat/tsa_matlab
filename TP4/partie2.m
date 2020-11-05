@@ -116,7 +116,7 @@ clc;close all;clear variables;
     for n = indice_temps_60:indice_temps_70
         somme_anticausal = 0;
         for k = 1:M
-            %s_chapeau_anticausal vaut la somme des s(n+k)
+            %s_chapeau_anticausal vaut la somme des [k] * s[n+k]
             somme_anticausal = somme_anticausal + h(k)*s(n+k);
         end
         s_chapeau_anticausal(p) = somme_anticausal;
