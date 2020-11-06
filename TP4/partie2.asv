@@ -109,7 +109,7 @@ clc;close all;clear variables;
     plot(time2,s_chapeau)
     subplot 212
     plot(time2,erreur_quad)
-    sound(s_chapeau,Fs)
+    
 %6. Restauration par prédiction causale/anticausale
     p = 1;
     s_chapeau_anticausal = zeros(1,length(s2));
@@ -158,7 +158,7 @@ clc;close all;clear variables;
     inter = intersect(crak,crak_antic);
     s_restaur = s2;
     for k = 1:length(inter)
-        s_restaur(inter(k)) = (s_chapeau(inter(k)) + s_chapeau_anticausal(inter(k)))/2;
+        s_restaur(k) = (mean(s_chapeau(inter(k)-10):s_chapeau(inter(k)+10)) + mean(s_chapeau_anticausal(k-10):s_chapeau_anticausal(k+10)))/2;
     end
 
     
@@ -175,10 +175,9 @@ clc;close all;clear variables;
 %     ylabel('Amplitude des craquements')
 %     title("Erreur quadratique après seuillage causal/anticausal")
     
-   % sound(s2,Fs)
-    %sound(s_restaur,Fs)
     
-    
+    sound(s_restaur,Fs)
+    %sound(s_chapeau,Fs)
 
 
 
