@@ -140,7 +140,7 @@ sound(s,Fs) ;\\[2mm]
 }
 \begin{figure}[!h] 	
     \centering
-    \includegraphics[width=0.7\textwidth]{images/signalorigine.png}
+    \includegraphics[width=1\textwidth]{images/signalorigine.png}
     \caption{Signal d'origine bruité}
     \label{fig-binaire}
 \end{figure}
@@ -173,7 +173,7 @@ Le code de cette partie est le suivant :
     s2 = s(indice_temps_60:indice_temps_70);
     
     % Calcul de l'autocorrélation à l'aide de la fonction xcorr (native à MATALB)
-    [R,lags] = xcorr(s,K,'biased');
+    [R,lags] = xcorr(s2,K,'biased');
     
     %Partie affichage (Tronquée pour la lisibilité du rapport) 
 \end{verbatim}
@@ -181,7 +181,7 @@ Le code de cette partie est le suivant :
 Nous obtenons les figure suivante : 
 \begin{figure}[!h] 	
     \centering
-    \includegraphics[width=0.7\textwidth]{images/signaloriginecourt.png}
+    \includegraphics[width=1\textwidth]{images/signaloriginecourt.png}
     \caption{Section du Signal entre 60 et 70 secondes}
     \label{fig-binaire}
 \end{figure}
@@ -190,7 +190,7 @@ Nous pouvons observer que l'on obtient un signal qui dure 10 secondes, l'amplitu
 \clearpage
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/autocorrelation.png}
+    \includegraphics[width=1\textwidth]{images/convo.png}
     \caption{Fonction d'auto-corrélation du signal entre 60 et 70s}
     \label{fig-binaire}
 \end{figure}
@@ -199,7 +199,7 @@ Nous pouvons observer sur la figure 3, la corrélation entre les échantillons. 
 A partir de cette fonction, justifier le choix $M \approx 20$ pour l'ordre du modèle $AR(M)$.\\
 \newline
 Graphiquement le $\pm$20ième échantillons correspond au première indice à avoir une amplitude nulle. Ainsi, nous pouvons considérer que l'on en possède un nombre suffisant pour pouvoir récréer le signal. \\
-A noter que plus le nombre d'échantillons est important et meilleurs est la précision d'estimation. Nous aurions pu prendre plus d'échantillons mais cela va augmenter le temps de calcul car cela nécessitera de nombreuse opération dont certaine coûteuse telle qu'une inversions de matrice. \\
+A noter que plus le nombre d'échantillons est important et meilleurs est la précision d'estimation. Nous aurions pu prendre plus d'échantillons mais cela aurais augmenter significativement le temps de calcul car certaine opérations sont coûteuse (Exemple : une inversions de matrice à M éléments). \\
 En conclusion M = 20, est cohérent car nous possédons un nombre suffisant d'indice pour estimer le signal tout en conservant une rapidité de calcul raisonnable on a assez d’échantillons pour prédire le signal. 
 
 \newpage
@@ -252,7 +252,7 @@ Afficher les coefficients  du modèle $AR(M)$ $\{h[k],~k=1,\ldots M\}$ ainsi obt
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/hk_solution.png}
+    \includegraphics[width=1\textwidth]{images/hk_solution.png}
     \caption{Coefficients solutions du système d'équations linéaires h[k]}
     \label{fig-binaire}
 \end{figure}
@@ -270,8 +270,8 @@ Reproduisez ci-dessous, le code développé pour effectuer la prédiction et le 
     p = 1;
     s_chapeau = zeros(1,length(s2));
     
-    % Pour tous les éléments de la séquences 
-    for n = indice_temps_60:indice_temps_70
+    % Pour tous les éléments de la séquences supérieur à 20. 
+    for n = indice_temps_60+20:indice_temps_70
         somme = 0;
         % Application de la formule : somme de 1 à M de h[k]*S(n-k)
         for k = 1:M
@@ -294,7 +294,7 @@ Sur la même figure (en {\tt subplot(212)}) afficher la valeur absolue de l'erre
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/global.png}
+    \includegraphics[width=1\textwidth]{images/global.png}
     \caption{Prédiction du signal, Signal Original et son erreur quadratique }
     \label{fig-binaire}
 \end{figure}
@@ -302,13 +302,13 @@ Sur la même figure (en {\tt subplot(212)}) afficher la valeur absolue de l'erre
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/zoom.png}
+    \includegraphics[width=1\textwidth]{images/zoom.png}
     \caption{Zoom sur l'un des craquements.}
     \label{fig-binaire}
 \end{figure}
 
 Nous constatons à l'aide de la figure 5 que les signaux sont très similaires. Si nous agrandissons l'intervalle (figure 6),  nous pouvons observer un décalage de l'ordre de quelques centièmes de seconde entre les deux signaux.\\ 
-A noter que sur l'erreur quadratique, nous pouvons observer  de nombreux pics d'erreurs. Ainsi, nous pouvons en déduire qu'il persiste du bruit sur le signal.\\
+A noter que sur l'erreur quadratique, nous pouvons observer  de nombreux pics d'erreurs. Avec l'erreur quadratique, nous pouvons observer un nombre de pics supérieurs aux craquement. Ainsi, nous pouvons conclure que cette méthode est peu fiable car il y a un certain nombre de faux positifs sont décelés.\\
 \clearpage
 
 \subsection{Restauration par seuillage}
@@ -338,7 +338,7 @@ Afficher le signal ainsi restauré  superposé au signal original bruité (faire
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/signalcraquement.png}
+    \includegraphics[width=1\textwidth]{images/signalcraquement.png}
     \caption{Zoom sur l'un des craquements.}
     \label{fig-binaire}
 \end{figure}
@@ -360,9 +360,10 @@ Programmez cette solution en expliquant bien chaque étape de la procédure.
     % Initialisation des variables 
     p = 1;
     s_chapeau_anticausal = zeros(1,length(s2));
+    s_restaur = s2;
     
-    % Parcours de l'échantillon 
-    for n = indice_temps_60:indice_temps_70
+    % Calcul de la somme anti-causal  
+    for n = indice_temps_60:indice_temps_70-20
         somme_anticausal = 0;*
         % Application de la formule : somme de 1 à M de h[k]*S(n+k)
         for k = 1:M
@@ -374,27 +375,16 @@ Programmez cette solution en expliquant bien chaque étape de la procédure.
         p = p+1;
     end
     
-    % Calcul de l'erreur quadratique anti-causale
+    % Calcul de l'erreur quadratique anti-causal
     erreur_quad_anticausal = s_chapeau_anticausal-s2';
     
-    erreur_quad_c_antic = erreur_quad.*erreur_quad_anticausal;
-    s_chapeau_c_antic = erreur_quad_c_antic + s2';
+    % Parcours des deux listes pour trouver les indices des craquements 
+    inter = intersect(crak,crak_antic);
     
-    % Seuillage avec les prédictions causale/anticausale
-    seuil2 = 10e-4;
-    
-    % Parcours de la nouvelle erreur quadratique 
-    crak_c_antic = find(abs(erreur_quad_c_antic)>=seuil2);
-    
-    % Parcours du signal d'estimation
-    for k = 1:1:length(crak_c_antic)
-        % Remplacement des erreurs par la moyenne des signaux estimés causaux et anti-causeaux  
-        s_chapeau_c_antic(crak_c_antic(k)) = (s_chapeau(crak_c_antic(k))+s_chapeau_anticausal(crak_c_antic(k)))/2;
+    % Parcours du signal et au besoin, on reconstruie à l'aide de S causal et anti_causal 
+    for k = 1:length(inter)
+        s_restaur(inter(k)) = (s_chapeau(inter(k)) + s_chapeau_anticausal(inter(k)))/2;
     end
-    
-    
-    % Calcul de l'erreur quadratique
-    erreur_quad_c_antic2 = s_chapeau_c_antic - s2';
     
     % Partie affichage ---
 \end{verbatim}
@@ -403,7 +393,7 @@ Affichez le résultat de la restauration ainsi obtenue.
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/partie6_signal.png}
+    \includegraphics[width=1\textwidth]{images/partie6_signal.png}
     \caption{Signal reconstitué}
     \label{fig-binaire}
 \end{figure}
@@ -417,7 +407,11 @@ Affichez le résultat de la restauration ainsi obtenue.
 
 Ecoutez le signal restauré. Concluez.
 
-Nous avons pu modifier le signal 
+Pour cette dernière partie, notre méthodologie peut être décomposée en 5 étapes. 1ère partie, nous avons calculé la fonction anti-causal pour $M=20$, ensuite nous calculons la nouvelle erreur quadratique. Dans un troisième temps, nous utilisons le même procédé qu'avec le signal causal pour récupérer les craquement.\\ 
+La dernière étape du processus est de comparer les deux vecteurs d'indices, les éléments communs correspondent au craquements. 
+Pour finir, on modifie ces valeurs en remplacent par la moyenne des deux signaux estimé.\\
+
+Nous avons écouté le signal, et nous constatons qu'il y a une améliorations de qualité car les craquements sont devenus moins présent sans que cela est dégradé la musique.
 \end{document}
 
 
