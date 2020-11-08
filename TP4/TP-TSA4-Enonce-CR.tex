@@ -148,7 +148,7 @@ sound(s,Fs) ;\\[2mm]
 On se propose de restaurer le signal initial en {\em débruitant} l'enregistrement.\\
 Quelle(s) solution(s) simple(s) pourrait on envisager pour supprimer (ou atténuer) l'effet de ces pics? En quoi ne seraient elles pas satisfaisantes ?\\ 
 \\
-Pour essayer de débruiter ce signal une des méthodes "simple" seraient  consisterais a définir un seuil. Ce pallier correspondrais à  l'amplitude maximum de la musique. Nous pourrions ainsi filtrer les amplitudes supérieurs (donc atténuer les parasites). Cette méthode possède deux problèmes, premièrement elle ne va pas débruiter mais seulement atténuer le bruit. Le second problème est que nous ne pourrions pas "facilement" imposer un seuil car il faudrait pouvoir discerner le signal utile du bruit. \newline
+Pour essayer de débruiter ce signal, l'une des méthodes "simple"  consisterait a définir un seuil. Ce palier correspondrait à  l'amplitude maximale de la musique, et nous pourrions ainsi filtrer les amplitudes supérieures (donc atténuer les parasites). Cette méthode pose deux problèmes : premièrement elle ne va pas débruiter mais seulement atténuer le bruit. Le second problème est que nous ne pourrions pas "facilement" imposer un seuil, car il faudrait pouvoir discerner le signal utile du bruit. \newline
 
 
 \vspace*{3mm}
@@ -178,14 +178,14 @@ Le code de cette partie est le suivant :
     %Partie affichage (Tronquée pour la lisibilité du rapport) 
 \end{verbatim}
 
-Nous obtenons les figure suivante : 
+Nous obtenons les figure suivante ; 
 \begin{figure}[!h] 	
     \centering
     \includegraphics[width=1\textwidth]{images/signaloriginecourt.png}
     \caption{Section du Signal entre 60 et 70 secondes}
     \label{fig-binaire}
 \end{figure}
-Nous pouvons observer que l'on obtient un signal qui dure 10 secondes, l'amplitude moyenne du signal est approximativement 0.015 (méthode graphique) et on observe une dizaine de pics qui peuvent être considérer comme parasite. \\
+nous pouvons observer que l'on obtient un signal qui dure 10 secondes, L'amplitude moyenne du signal est approximativement 0.015 (méthode graphique), et l'on observe une dizaine de pics qui peuvent être considérés comme parasites. \\
 
 \clearpage
 \begin{figure}[!h]
@@ -198,9 +198,9 @@ Nous pouvons observer sur la figure 3, la corrélation entre les échantillons. 
 \newline
 A partir de cette fonction, justifier le choix $M \approx 20$ pour l'ordre du modèle $AR(M)$.\\
 \newline
-Graphiquement le $\pm$20ième échantillons correspond au première indice à avoir une amplitude nulle. Ainsi, nous pouvons considérer que l'on en possède un nombre suffisant pour pouvoir récréer le signal. \\
-A noter que plus le nombre d'échantillons est important et meilleurs est la précision d'estimation. Nous aurions pu prendre plus d'échantillons mais cela aurais augmenter significativement le temps de calcul car certaine opérations sont coûteuse (Exemple : une inversions de matrice à M éléments). \\
-En conclusion M = 20, est cohérent car nous possédons un nombre suffisant d'indice pour estimer le signal tout en conservant une rapidité de calcul raisonnable on a assez d’échantillons pour prédire le signal. 
+Graphiquement le $\pm$20ième échantillons correspond au premier indice à avoir une amplitude nulle. Ainsi, nous pouvons considérer que l'on en possède un nombre suffisant pour pouvoir récréer le signal. \\
+Il est à noter que plus le nombre d'échantillons est important et meilleure est la précision d'estimation. Nous aurions pu prendre plus d'échantillons mais cela aurait augmenté significativement le temps de calcul, car certaines opérations sont coûteuses (Exemple : une inversion de matrice à M éléments). \\
+En conclusion M = 20 est un choix cohérent car nous possédons un nombre suffisant d'indices pour estimer le signal tout en conservant un temps de calcul raisonnable. 
 
 \newpage
 \subsection{Identification du modèle $AR(M)$}
@@ -256,7 +256,7 @@ Afficher les coefficients  du modèle $AR(M)$ $\{h[k],~k=1,\ldots M\}$ ainsi obt
     \caption{Coefficients solutions du système d'équations linéaires h[k]}
     \label{fig-binaire}
 \end{figure}
-Pour obtenir ces coefficients, nous avons générer une matrice de Toeplitz à l'aide de la fonction \textit{toeplitz}. Nous l'avons ensuite inverser et multiplier par le vecteur de h[k]. Pour finir, nous avons posé un chanement de variable pour obtenir le premier terme à 1, donc nous avons multiplié tous les éléments du vecteur par l'inverse du premier termes.
+Pour obtenir ces coefficients, nous avons généré une matrice de Toeplitz à l'aide de la fonction \textit{toeplitz}. Nous l'avons ensuite inversée et multipliée par le vecteur de h[k]. Pour finir, nous avons posé un changement de variable pour obtenir le premier terme à 1 : nous avons multiplié tous les éléments du vecteur par l'inverse du premier terms.
 \clearpage
 
 \subsection{Prédiction linéaire}
@@ -308,7 +308,7 @@ Sur la même figure (en {\tt subplot(212)}) afficher la valeur absolue de l'erre
 \end{figure}
 
 Nous constatons à l'aide de la figure 5 que les signaux sont très similaires. Si nous agrandissons l'intervalle (figure 6),  nous pouvons observer un décalage de l'ordre de quelques centièmes de seconde entre les deux signaux.\\ 
-A noter que sur l'erreur quadratique, nous pouvons observer  de nombreux pics d'erreurs. Avec l'erreur quadratique, nous pouvons observer un nombre de pics supérieurs aux craquement. Ainsi, nous pouvons conclure que cette méthode est peu fiable car il y a un certain nombre de faux positifs sont décelés.\\
+A noter que sur l'erreur quadratique, nous pouvons observer  de nombreux pics d'erreurs, en réalité un nombre supérieur au nombre de craquements. Ainsi, nous pouvons conclure que cette méthode est peu fiable car un certain nombre de "faux positifs" est décelé.\\
 \clearpage
 
 \subsection{Restauration par seuillage}
@@ -346,7 +346,7 @@ Afficher le signal ainsi restauré  superposé au signal original bruité (faire
 
 Ecouter le signal restauré. Commentez.\\
 \newline
-Sur la figure 7, nous pouvons observer que les nombreux pics d'amplitudes supérieur à 0.015 ont disparues. Cela indique que notre traitement a fonctionné. Cependant, sur l'erreur quadratique nous pouvons constater que des erreurs persiste. A l'aide de la fonction \textit{sound}, nous avons écouté le morceau modifié mais il semble étouffé. 
+Sur la figure 7, nous pouvons observer que les nombreux pics d'amplitude supérieur à 0.015 ont disparu. Cela indique que notre traitement a fonctionné. Cependant, sur l'erreur quadratique nous pouvons constater que des erreurs persistent. A l'aide de la fonction \textit{sound}, nous avons écouté le morceau modifié mais il semble étouffé. 
 \clearpage
 
 \subsection{Restauration par prédiction {\em causale / anticausale}}
@@ -397,21 +397,21 @@ Affichez le résultat de la restauration ainsi obtenue.
     \caption{Signal reconstitué}
     \label{fig-binaire}
 \end{figure}
-
+\newpage
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/partie6_err_quad.png}
+    \includegraphics[width=0.7\textwidth]{images/figure2.6.2.png}
     \caption{Erreur quadratique}
     \label{fig-binaire}
 \end{figure}
 
 Ecoutez le signal restauré. Concluez.
 
-Pour cette dernière partie, notre méthodologie peut être décomposée en 5 étapes. 1ère partie, nous avons calculé la fonction anti-causal pour $M=20$, ensuite nous calculons la nouvelle erreur quadratique. Dans un troisième temps, nous utilisons le même procédé qu'avec le signal causal pour récupérer les craquement.\\ 
+Pour cette dernière partie, notre méthodologie peut être décomposée en 5 étapes. 1ère partie, nous avons calculé la fonction anti-causale pour $M=20$, ensuite nous calculons la nouvelle erreur quadratique. Dans un troisième temps, nous utilisons le même procédé qu'avec le signal causal pour récupérer les craquement.\\ 
 La dernière étape du processus est de comparer les deux vecteurs d'indices, les éléments communs correspondent au craquements. 
-Pour finir, on modifie ces valeurs en remplacent par la moyenne des deux signaux estimé.\\
+Pour finir, on modifie ces éléments en remplaçant dans le signal par la moyenne des deux signaux estimés.\\
 
-Nous avons écouté le signal, et nous constatons qu'il y a une améliorations de qualité car les craquements sont devenus moins présent sans que cela est dégradé la musique.
+Nous avons écouté le signal, et nous constatons qu'il y a une améliorations de qualité car les craquements sont plus discrets sans que cela ait altéré la qualité de la musique.
 \end{document}
 
 

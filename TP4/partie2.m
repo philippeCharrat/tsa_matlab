@@ -107,8 +107,14 @@ clc;close all;clear variables;
     figure(9)
     subplot 211
     plot(time2,s_chapeau)
+    xlabel('Temps(s)')
+    ylabel('Amplitude')
+    title('Signal restauré par seuillage')
     subplot 212
     plot(time2,erreur_quad)
+    xlabel('Temps(s)')
+    ylabel('Amplitude')
+    title('Erreur quadratique restante après la restauration par seuillage')
     sound(s_chapeau,Fs)
 %6. Restauration par prédiction causale/anticausale
     p = 1;
@@ -124,7 +130,7 @@ clc;close all;clear variables;
     end
     erreur_quad_anticausal = s_chapeau_anticausal-s2';
     
-    erreur_quad_c_antic = erreur_quad.*erreur_quad_anticausal;
+    erreur_quad_c_antic = (erreur_quad+erreur_quad_anticausal)/2;
     s_chapeau_c_antic = erreur_quad_c_antic + s2';
     
     figure(7)
