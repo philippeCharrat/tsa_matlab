@@ -67,19 +67,21 @@ clc;close all;clear variables;
     title('Coefficients du modèle AR(M) obetnus')
     
 %4. Prédiction linéaire
-    %Initialisation des variables
-    p = 1;
-    s_chapeau = zeros(1,length(s2));
-    for n = indice_temps_60+M:indice_temps_70
-        somme = 0;
-        for k = 1:M
-            %s_chapeau vaut la somme des s(n-k)
-            somme = somme + h(k)*s(n-k);
-        end
-        s_chapeau(p) = somme;
-        p = p+1;
+%Initialisation des variables
+p = 1;s_chapeau = zeros(1,length(s2));
+% Pour tous les éléments de la séquences supérieur à 20.
+for n = indice_temps_60+20:indice_temps_70
+    somme = 0;
+    % Application de la formule : somme de 1 à M de h[k]*S(n-k)
+    for k = 1:M
+        somme = somme + h(k)*s(n-k);
     end
-    erreur_quad = s_chapeau-s2';
+    % Ajout de la valeur dans le vecteur
+    s_chapeau(p) = somme;p = p+1;
+end% Calcul de l’erreur quadratique moyenne
+erreur_quad = s_chapeau-s2';
+    
+    close all
     %Partie affichage
     figure(5)
     subplot(211)
@@ -88,12 +90,13 @@ clc;close all;clear variables;
     ylabel('Amplitude')
     legend("Signal d'origine","Signal prédit")
     title("Signaux d'origine et prédit entre t = 60s et t = 70s")
-    
     subplot(212)
-    plot(time2,erreur_quad,'r')
+    plot(time2,s2'-s_chapeau,'r')
     xlabel('Temps(s)')
     ylabel('Amplitude')
     title('Erreur quadratique')
+    
+    
     
     
     
@@ -103,13 +106,15 @@ clc;close all;clear variables;
     for k = 1:1:length(crak)
         s_chapeau(crak(k)) = median(s(indice_temps_60+crak(k)-10:indice_temps_60+crak(k)+10));
     end
-    erreur_quad = s_chapeau - s2';
-    figure(9)
+    erreur_quad = s2'-s_chapeau;
+    figure(6)
     subplot 211
-    plot(time2,s_chapeau)
+    plot(time2,s2,'r',time2,s_chapeau,'b')
     xlabel('Temps(s)')
     ylabel('Amplitude')
     title('Signal restauré par seuillage')
+%     subplot 312
+%     plot(time2,s2)
     subplot 212
     plot(time2,erreur_quad)
     xlabel('Temps(s)')
